@@ -207,7 +207,7 @@ export const menuItems = [
   { icon: "🏠", label: "Dashboard", href: "/dashboard", active: true },
   { icon: "👥", label: "Find Partners", href: "/partners" },
   { icon: "📚", label: "Study Groups", href: "/study-groups" },
-  { icon: "📅", label: "Schedule", href: "/schedule" },
+  // { icon: "📅", label: "Schedule", href: "/schedule" },
   { icon: "📊", label: "Progress", href: "/progress-tracker" },
   { icon: "💬", label: "Chat", href: "/chat" },
   { icon: "👤", label: "Profile", href: "/profile" },
