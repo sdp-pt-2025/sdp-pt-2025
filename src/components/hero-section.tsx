@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 export function Badge({ children, className = "" }) {
   return (
     <motion.span
-      className={`inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium ${className}`}
+      className={`inline-block bg-blue-100 text-blue-900 px-4 py-2 rounded-full text-sm font-medium ${className}`}
       whileHover={{
         scale: 1.05,
       }}
