@@ -1,4 +1,4 @@
-import NoPage404 from "@/assets/404.jpeg";
+import NoPage404 from "@/assets/4044.jpg";
 import { Button } from "./ui/button";
 
 const NoPage = () => {
