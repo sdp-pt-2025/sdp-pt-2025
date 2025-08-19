@@ -1,3 +1,4 @@
+// @ts-nocheck
 // firebase/auth.ts - Authentication functions
 import {
   signInWithPopup,

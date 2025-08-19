@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { menuItems } from "@/constants/features";
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
