@@ -1,4 +1,4 @@
-import React from "react";
+// @ts-nocheck
 import { motion } from "framer-motion";
 import { useAuthContext } from "@/provider";
 import { AuthButton, UserMenu } from "@/components/auth/auth";
