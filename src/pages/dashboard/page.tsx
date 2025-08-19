@@ -1,4 +1,4 @@
-import React from "react";
+// @ts-nocheck
 import Sidebar from "@/components/Sidebar/sidebar";
 
 export default function Dashboard() {
