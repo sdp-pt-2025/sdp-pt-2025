@@ -1,0 +1,23 @@
+{
+  "name": "campus-study-buddy",
+  "version": "1.0.0",
+  "description": "Campus Study Buddy - A platform for students to find study partners and form study groups",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --prefix frontend run start",
+    "dev:api": "npm --prefix server run dev",
+    "dev": "concurrently -n WEB,API -c auto \"npm:dev:web\" \"npm:dev:api\"",
+    "install:all": "npm install && npm --prefix frontend install && npm --prefix server install",
+    "build": "npm --prefix frontend run build",
+    "test": "npm --prefix server run test",
+    "lint": "npm --prefix server run lint",
+    "lint:fix": "npm --prefix server run lint:fix",
+    "format": "npm --prefix server run format"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

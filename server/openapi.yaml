@@ -1,0 +1,1037 @@
+openapi: 3.0.3
+info:
+  title: Campus Study Buddy API
+  description: API for Campus Study Buddy - A platform for students to find study partners and form study groups
+  version: 1.0.0
+  contact:
+    name: Campus Study Buddy Team
+    email: support@campusstudybuddy.com
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: https://api.campusstudybuddy.com
+    description: Production server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Firebase ID token
+
+  schemas:
+    User:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: Firebase user ID
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        picture:
+          type: string
+          format: uri
+
+    Partner:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        modules:
+          type: array
+          items:
+            type: string
+        studyPreferences:
+          type: array
+          items:
+            type: string
+        availability:
+          type: array
+          items:
+            type: string
+        rating:
+          type: number
+          minimum: 0
+          maximum: 5
+        totalStudySessions:
+          type: integer
+          minimum: 0
+
+    StudyGroup:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        module:
+          type: string
+        maxMembers:
+          type: integer
+          minimum: 1
+        currentMembers:
+          type: integer
+          minimum: 0
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              role:
+                type: string
+                enum: [admin, member]
+        schedule:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        groupId:
+          type: string
+        userId:
+          type: string
+        userName:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ProgressEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        module:
+          type: string
+        topic:
+          type: string
+        hoursStudied:
+          type: number
+          minimum: 0
+        confidence:
+          type: integer
+          minimum: 1
+          maximum: 5
+        notes:
+          type: string
+        date:
+          type: string
+          format: date-time
+
+    CalendarEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        startISO:
+          type: string
+          format: date-time
+        endISO:
+          type: string
+          format: date-time
+        location:
+          type: string
+        attendees:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              responseStatus:
+                type: string
+                enum: [needsAction, accepted, declined, tentative]
+        creator:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+            displayName:
+              type: string
+
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        hasNext:
+          type: boolean
+        hasPrev:
+          type: boolean
+
+    SearchSummary:
+      type: object
+      properties:
+        filters:
+          type: object
+          properties:
+            module:
+              type: string
+              nullable: true
+            notModule:
+              type: string
+              nullable: true
+            modules:
+              type: string
+              nullable: true
+            modulesAll:
+              type: string
+              nullable: true
+            page:
+              type: integer
+            limit:
+              type: integer
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        timestamp:
+          type: string
+          format: date-time
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Returns the health status of the API
+      tags:
+        - Health
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  timestamp:
+                    type: string
+                    format: date-time
+                  service:
+                    type: string
+                  version:
+                    type: string
+
+  /api/partners:
+    get:
+      summary: Get study partners with advanced filtering
+      description: Retrieve a list of study partners with advanced filtering options including anti-search
+      tags:
+        - Partners
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: module
+          in: query
+          description: Filter partners by single module code
+          required: false
+          schema:
+            type: string
+            example: COMS3011
+        - name: notModule
+          in: query
+          description: Anti-search - exclude partners taking this module
+          required: false
+          schema:
+            type: string
+            example: COMS3011
+        - name: modules
+          in: query
+          description: Filter by multiple modules (any match)
+          required: false
+          schema:
+            type: string
+            example: COMS3011,MATH2001
+        - name: modulesAll
+          in: query
+          description: Filter by multiple modules (must match all)
+          required: false
+          schema:
+            type: string
+            example: COMS3011,MATH2001
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Maximum number of partners to return
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: List of study partners
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Partner'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationInfo'
+                  searchSummary:
+                    $ref: '#/components/schemas/SearchSummary'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        message:
+                          type: string
+                        value:
+                          type: string
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal server error
+
+  /api/partners/{id}:
+    get:
+      summary: Get a specific study partner
+      description: Retrieve details of a specific study partner by ID
+      tags:
+        - Partners
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Partner ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Partner details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Partner'
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Partner not found
+        '500':
+          description: Internal server error
+
+  /api/groups:
+    get:
+      summary: Get study groups
+      description: Retrieve a list of study groups, optionally filtered by module
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: module
+          in: query
+          description: Filter groups by module code
+          required: false
+          schema:
+            type: string
+            example: COMS3011
+      responses:
+        '200':
+          description: List of study groups
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StudyGroup'
+                  count:
+                    type: integer
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a study group
+      description: Create a new study group
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - module
+              properties:
+                name:
+                  type: string
+                  description: Name of the study group
+                  minLength: 1
+                  maxLength: 100
+                description:
+                  type: string
+                  description: Description of the study group
+                  maxLength: 500
+                module:
+                  type: string
+                  description: Module code
+                  minLength: 1
+                  maxLength: 20
+                maxMembers:
+                  type: integer
+                  minimum: 2
+                  maximum: 50
+                  default: 8
+                  description: Maximum number of members
+                schedule:
+                  type: array
+                  items:
+                    type: string
+                  description: Study schedule
+                location:
+                  type: string
+                  description: Study location
+                  maxLength: 200
+      responses:
+        '201':
+          description: Study group created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/StudyGroup'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - Validation error
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal server error
+
+  /api/groups/{id}:
+    get:
+      summary: Get a specific study group
+      description: Retrieve details of a specific study group by ID
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Group ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Group details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/StudyGroup'
+        '400':
+          description: Bad request - Validation error
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Group not found
+        '500':
+          description: Internal server error
+
+  /api/groups/{id}/join:
+    post:
+      summary: Join a study group
+      description: Join an existing study group
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Group ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully joined the group
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/StudyGroup'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - Already a member or group is full
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Group not found
+        '500':
+          description: Internal server error
+
+  /api/groups/{id}/message:
+    post:
+      summary: Send a message to a study group
+      description: Send a message to a study group (must be a member)
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Group ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  description: Message content
+                  minLength: 1
+                  maxLength: 1000
+      responses:
+        '201':
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Message'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - Validation error
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '403':
+          description: Forbidden - Not a member of the group
+        '404':
+          description: Group not found
+        '500':
+          description: Internal server error
+
+  /api/groups/{id}/messages:
+    get:
+      summary: Get messages from a study group
+      description: Retrieve messages from a study group (must be a member)
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Group ID
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of messages to return
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                  count:
+                    type: integer
+                  total:
+                    type: integer
+        '400':
+          description: Bad request - Validation error
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '403':
+          description: Forbidden - Not a member of the group
+        '404':
+          description: Group not found
+        '500':
+          description: Internal server error
+
+  /api/progress:
+    get:
+      summary: Get current user's progress summary
+      description: Retrieve a summary of the current user's study progress
+      tags:
+        - Progress
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Progress summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      summary:
+                        type: object
+                        properties:
+                          totalEntries:
+                            type: integer
+                          totalHours:
+                            type: number
+                          averageConfidence:
+                            type: number
+                          modules:
+                            type: array
+                            items:
+                              type: string
+                          lastUpdated:
+                            type: string
+                            format: date-time
+                      recentEntries:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProgressEntry'
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a progress entry
+      description: Create a new study progress entry
+      tags:
+        - Progress
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - module
+                - topic
+                - hours
+              properties:
+                module:
+                  type: string
+                  description: Module code
+                  minLength: 1
+                  maxLength: 20
+                topic:
+                  type: string
+                  description: Study topic
+                  minLength: 1
+                  maxLength: 200
+                hours:
+                  type: number
+                  minimum: 0.1
+                  maximum: 24
+                  description: Hours spent studying
+                confidence:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                  description: Confidence level (1-5)
+                notes:
+                  type: string
+                  description: Additional notes
+                  maxLength: 1000
+      responses:
+        '201':
+          description: Progress entry created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ProgressEntry'
+                  message:
+                    type: string
+        '400':
+          description: Bad request - Validation error
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal server error
+
+  /api/progress/{userId}:
+    get:
+      summary: Get user's progress
+      description: Retrieve study progress for a specific user (users can only view their own progress)
+      tags:
+        - Progress
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+        - name: module
+          in: query
+          description: Filter by module code
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of entries to return
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: User's progress entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProgressEntry'
+                  summary:
+                    type: object
+                    properties:
+                      totalEntries:
+                        type: integer
+                      totalHours:
+                        type: number
+                      averageConfidence:
+                        type: number
+                      modules:
+                        type: array
+                        items:
+                          type: string
+                      lastUpdated:
+                        type: string
+                        format: date-time
+        '400':
+          description: Bad request - Validation error
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '403':
+          description: Forbidden - Can only view own progress
+        '500':
+          description: Internal server error
+
+  /api/schedule:
+    get:
+      summary: Get calendar events
+      description: Retrieve calendar events (mock implementation)
+      tags:
+        - Schedule
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: timeMin
+          in: query
+          description: Start time filter (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: timeMax
+          in: query
+          description: End time filter (ISO 8601)
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: maxResults
+          in: query
+          description: Maximum number of events to return
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: List of calendar events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CalendarEvent'
+                  count:
+                    type: integer
+                  total:
+                    type: integer
+                  note:
+                    type: string
+                  mock:
+                    type: boolean
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a calendar event
+      description: Create a new calendar event (mock implementation)
+      tags:
+        - Schedule
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - startISO
+                - endISO
+              properties:
+                title:
+                  type: string
+                  description: Event title
+                  minLength: 1
+                  maxLength: 200
+                description:
+                  type: string
+                  description: Event description
+                  maxLength: 500
+                startISO:
+                  type: string
+                  format: date-time
+                  description: Start time (ISO 8601)
+                endISO:
+                  type: string
+                  format: date-time
+                  description: End time (ISO 8601)
+                location:
+                  type: string
+                  description: Event location
+                attendees:
+                  type: array
+                  items:
+                    type: string
+                    format: email
+                  description: List of attendee emails
+      responses:
+        '201':
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/CalendarEvent'
+                  message:
+                    type: string
+                  note:
+                    type: string
+                  mock:
+                    type: boolean
+        '400':
+          description: Bad request - Validation error
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal server error
+
+  /api/schedule/{id}:
+    get:
+      summary: Get a specific calendar event
+      description: Retrieve details of a specific calendar event (mock implementation)
+      tags:
+        - Schedule
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Event ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Event details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/CalendarEvent'
+                  note:
+                    type: string
+                  mock:
+                    type: boolean
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Event not found
+        '500':
+          description: Internal server error
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Partners
+    description: Study partner management with advanced search and anti-search
+  - name: Groups
+    description: Study group management
+  - name: Progress
+    description: Study progress tracking
+  - name: Schedule
+    description: Calendar and scheduling (mock implementation for Sprint 1)
