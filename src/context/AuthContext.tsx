@@ -3,10 +3,10 @@ import { createContext } from "react";
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean; // Add loading
+  loading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true, // Add default loading state
+  loading: true,
 });
