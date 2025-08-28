@@ -1,0 +1,213 @@
+
+
+
+
+
+
+@media only screen and (max-width: 767px) and (orientation: portrait){
+  .field{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .hello{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .Form{
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+  }
+  .Form{
+    width:80vw;
+    outline: 1px solid black;
+    padding: 2vh;
+    border-radius: 4px;
+    box-shadow: 5px 5px 10px gray
+  }
+  input{
+    width:50vw;
+    height:4vh;
+  }
+  textarea{
+    width:50vw;
+    height: 30vw;
+  }
+
+  .Form button{
+    width: 55vw;
+    height: 7vh;
+    background-color: white;
+     box-shadow: 2px 2px 5px gray;
+     border-radius: 4px;
+
+  }
+}
+
+
+@media only screen and (max-width: 767px) and (orientation: landscape){
+  .field{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .hello{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .Form{
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+  }
+  .Form{
+    width:80vw;
+    outline: 1px solid black;
+    padding: 2vh;
+    border-radius: 4px;
+    box-shadow: 5px 5px 10px gray
+  }
+  input{
+    width:50vw;
+    height:12vh;
+  }
+  textarea{
+    width:50vw;
+    height: 20vw;
+  }
+
+  .Form button{
+    width: 40vw;
+    height: 15vh;
+    background-color: white;
+     box-shadow: 2px 2px 5px gray;
+     border-radius: 4px;
+
+  }
+}
+@media only screen and (min-width: 767px)  and (orientation: landscape){
+    .field{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size:x-large;
+  }
+  .hello{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    font-size:x-large;
+  }
+  .Form{
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+  }
+  .Form{
+    width:40vw;
+    outline: 1px solid black;
+    padding: 15vh;
+    border-radius: 4px;
+    box-shadow: 5px 5px 10px gray
+  }
+  input{
+    width:30vw;
+    height:6vh;
+        font-size:x-large;
+
+  }
+  textarea{
+    width:30vw;
+    height: 10vw;
+        font-size:x-large;
+
+
+  }
+  .hello h1{
+    font-size: 2.5vw;
+  }
+
+  .Form button{
+    width: 20vw;
+    height: 7vh;
+    background-color: white;
+     box-shadow: 5px 5spx 10px gray;
+     border-radius: 4px;
+             font-size:x-large;
+
+
+
+  }
+  
+  .form:hover{
+    background-color: #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+}
+
+
+
+@media only screen and (min-width: 767px)  and (orientation: portrait){
+    .field{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size:x-large;
+  }
+  .hello{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    font-size:x-large;
+  }
+  .Form{
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+  }
+  .Form{
+    width:60vw;
+    outline: 1px solid black;
+    padding: 5vh;
+    border-radius: 4px;
+    box-shadow: 5px 5px 10px gray
+  }
+  input{
+    width:40vw;
+    height:6vh;
+        font-size:x-large;
+
+  }
+  textarea{
+    width:40vw;
+    height: 10vw;
+        font-size:x-large;
+
+
+  }
+  .hello h1{
+    font-size: 2.5vw;
+  }
+
+  .Form button{
+    width: 20vw;
+    height: 7vh;
+    background-color: white;
+     box-shadow: 5px 5spx 10px gray;
+     border-radius: 4px;
+             font-size:x-large;
+
+
+
+  }
+  
+  .form:hover{
+    background-color: #f0f0f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+}

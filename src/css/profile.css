@@ -1,0 +1,45 @@
+@media only screen and (min-width: 767px)  and (orientation: landscape){
+    .one{
+        display:flex;
+        width:60vw;
+        justify-content: space-between;
+        font-size: xx-large;
+        padding:3vw;
+    }   
+    .one img{
+        outline: 5px solid black;
+        width:20vw;
+        height: 40vh;
+        border-radius: 15px;
+                box-shadow: 10px 10px 15px silver;
+
+    }
+    .hi{
+        outline: 5px solid black;
+        padding: 1vw;
+        width: 30vw;
+                border-radius: 15px;
+
+        box-shadow: 15px 15px 20px gray;
+
+    }
+    .hi button{
+        background-color: rgb(234, 114, 23);
+        color: white;
+        font-size: 1vw;
+        width:8vw;
+        height:8vh;
+        border-radius: 30px;
+    }
+    button.lo {
+        background-color: rgb(171, 166, 166);
+    }
+    .buttons{
+        display:flex;
+        justify-content: space-between;
+        width: 17vw;
+    }
+
+
+
+}
