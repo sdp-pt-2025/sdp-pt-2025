@@ -13,7 +13,7 @@ export default function ChatWindow() {
 
   const selectedChat = {
     id: chatId,
-    name: `Chat ${chatId}`, // Optional: map to actual name from conversations
+    name: `Chat ${chatId}`, // when the backend is set up we will use a uuid generator function
   };
 
   const getMessagesForChat = (chatId) => {

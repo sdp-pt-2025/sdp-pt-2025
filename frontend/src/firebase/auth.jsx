@@ -7,7 +7,7 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "./init"; // adjust relative path as needed
+import { auth } from "./init"; 
 
 import React, { useState } from "react";
 
