@@ -128,7 +128,7 @@ app.post("/userPreferance", async (req, res) => {
 
 // Get user info
 app.get("/getuserinfo/:s", async (req, res) => {
-    const stdnum = req.params.s;
+    const stdnum = req.query.s;
     try {
         const result = await pool.query("SELECT * FROM UserInfo WHERE student_num=$1", [stdnum]);
         res.json(result.rows);
@@ -139,7 +139,7 @@ app.get("/getuserinfo/:s", async (req, res) => {
 
 // Get user modules
 app.get("/getusermodules/:s", async (req, res) => {
-    const stdnum = req.params.s;
+    const stdnum = req.query.s;
     try {
         const result = await pool.query("SELECT * FROM UserModules WHERE student_num=$1", [stdnum]);
         res.json(result.rows);
@@ -150,7 +150,7 @@ app.get("/getusermodules/:s", async (req, res) => {
 
 // Get user preferences
 app.get("/getuserpreferance/:s", async (req, res) => {
-    const stdnum = req.params.s;
+    const stdnum = req.query.s;
     try {
         const result = await pool.query("SELECT * FROM UserPreferance WHERE student_num=$1", [stdnum]);
         res.json(result.rows);
