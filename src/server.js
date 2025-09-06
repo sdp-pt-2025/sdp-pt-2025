@@ -130,7 +130,7 @@ app.post("/userPreperence", async (req, res) => {
 app.get("/getuserinfo", async (req, res) => {
     const stdnum = req.query.s;
     try {
-        const result = await pool.query("SELECT * FROM UserInfo WHERE student_num=$1", [stdnum]);
+        const result = await pool.query(`SELECT * FROM UserInfo WHERE student_num=$1`, [stdnum]);
         res.json(result.rows);
     } catch (e) {
         res.status(500).send(e);
@@ -141,7 +141,7 @@ app.get("/getuserinfo", async (req, res) => {
 app.get("/getusermodules", async (req, res) => {
     const stdnum = req.query.s;
     try {
-        const result = await pool.query("SELECT * FROM UserModules WHERE student_num=$1", [stdnum]);
+        const result = await pool.query(`SELECT * FROM UserModules WHERE student_num=$1`, [stdnum]);
         res.json(result.rows);
     } catch (e) {
         res.status(500).send(e);
@@ -152,7 +152,7 @@ app.get("/getusermodules", async (req, res) => {
 app.get("/getuserpreferance", async (req, res) => {
     const stdnum = req.query.s;
     try {
-        const result = await pool.query("SELECT * FROM UserPreferance WHERE student_num=$1", [stdnum]);
+        const result = await pool.query(`SELECT * FROM UserPreferance WHERE student_num=$1`, [stdnum]);
         res.json(result.rows);
     } catch (e) {
         res.status(500).send(e);
@@ -163,10 +163,22 @@ app.get("/getuserpreferance", async (req, res) => {
 app.get("/getpfp", async (req, res) => {
     const stdnum = req.params.s;
     try {
-        const result = await pool.query("SELECT * FROM Pfp WHERE student_num=$1", [stdnum]);
+        const result = await pool.query(`SELECT * FROM Pfp WHERE student_num=$1`, [stdnum]);
         res.json(result.rows);
     } catch (e) {
         res.status(500).send(e);
+    }
+});
+
+app.delete("/deletemodule",async(req,res)=>{
+    const std_num=req.query.s;
+    const module=req.query.m;
+
+    try{
+        await pool.query(`DELETE FROM UserModules WHERE student_num=$1 AND module=$2`,[std_num,module]);
+        
+    }catch(error){
+        res.send(error)
     }
 });
 
