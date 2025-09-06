@@ -176,6 +176,7 @@ app.delete("/deletemodule",async(req,res)=>{
 
     try{
         await pool.query(`DELETE FROM UserModules WHERE student_num=$1 AND module=$2`,[std_num,module]);
+        res.send("Yayyyy");
         
     }catch(error){
         res.send(error)
