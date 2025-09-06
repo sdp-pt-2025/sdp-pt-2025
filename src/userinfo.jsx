@@ -7,6 +7,8 @@ export default function UserInfo(){
     const [age,setage]=useState("");
    let username=localStorage.getItem("username");
    let email=localStorage.getItem("email");
+    let username="Hlulani Baloyi";
+    let email="test@email.students.wits.ac.za"
     const[DOS,setDOS]=useState("");
     const[YOS,setYOS]=useState("");
 
