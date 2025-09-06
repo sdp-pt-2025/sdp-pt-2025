@@ -127,7 +127,7 @@ app.post("/userPreferance", async (req, res) => {
 });
 
 // Get user info
-app.get("/getuserinfo/:s", async (req, res) => {
+app.get("/getuserinfo", async (req, res) => {
     const stdnum = req.query.s;
     try {
         const result = await pool.query("SELECT * FROM UserInfo WHERE student_num=$1", [stdnum]);
@@ -138,7 +138,7 @@ app.get("/getuserinfo/:s", async (req, res) => {
 });
 
 // Get user modules
-app.get("/getusermodules/:s", async (req, res) => {
+app.get("/getusermodules", async (req, res) => {
     const stdnum = req.query.s;
     try {
         const result = await pool.query("SELECT * FROM UserModules WHERE student_num=$1", [stdnum]);
@@ -149,7 +149,7 @@ app.get("/getusermodules/:s", async (req, res) => {
 });
 
 // Get user preferences
-app.get("/getuserpreferance/:s", async (req, res) => {
+app.get("/getuserpreferance", async (req, res) => {
     const stdnum = req.query.s;
     try {
         const result = await pool.query("SELECT * FROM UserPreferance WHERE student_num=$1", [stdnum]);
@@ -160,7 +160,7 @@ app.get("/getuserpreferance/:s", async (req, res) => {
 });
 
 // Get profile picture
-app.get("/getpfp/:s", async (req, res) => {
+app.get("/getpfp", async (req, res) => {
     const stdnum = req.params.s;
     try {
         const result = await pool.query("SELECT * FROM Pfp WHERE student_num=$1", [stdnum]);
