@@ -111,7 +111,7 @@ app.post("/modules", async (req, res) => {
 });
 
 // Add user preference
-app.post("/userPreferance", async (req, res) => {
+app.post("/userPreperence", async (req, res) => {
     const { s: stdnum, sg: Study_goal, b: Bio, l: Learning_style, sl: Study_location, m: Motivator } = req.query;
 
     try {
