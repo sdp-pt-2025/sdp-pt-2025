@@ -472,6 +472,7 @@ Following **Conventional Commits** standard:
 | **perf**   | Performance improvements                        | `perf: optimize image loading`             |
 | **test**   | Add or update tests                             | `test: add unit tests for login module`    |
 | **chore**  | Maintenance tasks                               | `chore: update project dependencies`       |
+| **remove** | Remove files or code                             | `remove: delete temporary debug script`    |
 
 #### Branching Strategy
 - **Always existing branches**: `main`, `release`, `stable`
