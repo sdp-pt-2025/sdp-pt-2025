@@ -3,12 +3,18 @@ import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import admin from "firebase-admin";
+import rateLimit from "express-rate-limit";
+import compression from "compression";
 import { verifyToken } from "./middleware/auth.js";
 import healthRouter from "./routes/health.js";
 import groupsRouter from "./routes/groups.js";
 import partnersRouter from "./routes/partners.js";
 import progressRouter from "./routes/progress.js";
 import scheduleRouter from "./routes/schedule.js";
+import weatherRouter from "./routes/weather.js";
+import filesRouter from "./routes/files.js";
+import notificationsRouter from "./routes/notifications.js";
+import bugsRouter from "./routes/bugs.js";
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +43,7 @@ if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
 
 // Middleware
 app.use(helmet());
+app.use(compression());
 app.use(
   cors({
     origin:
@@ -46,6 +53,20 @@ app.use(
     credentials: true
   })
 );
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+  message: {
+    error: 'Too many requests',
+    message: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -57,6 +78,10 @@ app.use("/api/groups", verifyToken, groupsRouter);
 app.use("/api/partners", verifyToken, partnersRouter);
 app.use("/api/progress", verifyToken, progressRouter);
 app.use("/api/schedule", verifyToken, scheduleRouter);
+app.use("/api/weather", verifyToken, weatherRouter);
+app.use("/api/files", verifyToken, filesRouter);
+app.use("/api/notifications", verifyToken, notificationsRouter);
+app.use("/api/bugs", verifyToken, bugsRouter);
 
 // Global error handler
 app.use((err, req, res, _next) => {

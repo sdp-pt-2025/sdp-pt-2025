@@ -1,0 +1,110 @@
+{
+  "name": "campus-study-buddy",
+  "version": "2.0.0",
+  "description": "A comprehensive platform for university students to find study partners, create study groups, track progress, and manage study schedules",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start": "cd backend && npm start",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "test:unit": "npm run test:backend:unit && npm run test:frontend:unit",
+    "test:backend:unit": "cd backend && npm run test:unit",
+    "test:frontend:unit": "cd frontend && npm run test:unit",
+    "test:integration": "cd backend && npm run test:integration",
+    "test:e2e": "cd frontend && npm run test:e2e",
+    "test:watch": "concurrently \"npm run test:backend:watch\" \"npm run test:frontend:watch\"",
+    "test:backend:watch": "cd backend && npm run test:watch",
+    "test:frontend:watch": "cd frontend && npm run test:watch",
+    "test:coverage": "npm run test:backend:coverage && npm run test:frontend:coverage",
+    "test:backend:coverage": "cd backend && npm run test:coverage",
+    "test:frontend:coverage": "cd frontend && npm run test:coverage",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:fix": "npm run lint:backend:fix && npm run lint:frontend:fix",
+    "lint:backend:fix": "cd backend && npm run lint:fix",
+    "lint:frontend:fix": "cd frontend && npm run lint:fix",
+    "format": "npm run format:backend && npm run format:frontend",
+    "format:backend": "cd backend && npm run format",
+    "format:frontend": "cd frontend && npm run format",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "clean": "npm run clean:backend && npm run clean:frontend",
+    "clean:backend": "cd backend && npm run clean",
+    "clean:frontend": "cd frontend && npm run clean",
+    "seed:db": "cd backend && npm run seed:db",
+    "seed:test": "cd backend && npm run seed:test",
+    "health:check": "cd backend && npm run health:check",
+    "setup": "npm run install:all && npm run setup:env && npm run setup:firebase",
+    "setup:env": "node scripts/setup-env.js",
+    "setup:firebase": "node scripts/setup-firebase.js",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up",
+    "docker:build": "docker-compose -f docker-compose.dev.yml build",
+    "docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "docs:generate": "cd backend && npm run docs:generate",
+    "docs:serve": "cd backend && npm run docs:serve",
+    "precommit": "npm run lint && npm run test:unit",
+    "prepush": "npm run test && npm run build",
+    "release": "npm run test && npm run build && npm run docs:generate"
+  },
+  "keywords": [
+    "study-buddy",
+    "university",
+    "education",
+    "collaboration",
+    "firebase",
+    "react",
+    "nodejs",
+    "express"
+  ],
+  "author": "Campus Study Buddy Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "eslint": "^9.32.0",
+    "jest": "^30.0.5",
+    "supertest": "^7.1.4",
+    "@types/jest": "^29.5.14",
+    "cypress": "^13.15.1",
+    "playwright": "^1.48.2"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/campus-study-buddy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/campus-study-buddy/issues"
+  },
+  "homepage": "https://github.com/your-username/campus-study-buddy#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run test"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

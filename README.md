@@ -1,66 +1,466 @@
-# Software Design project (Part-time) 2025
+# Campus Study Buddy - Complete Development Platform
 
-## Table of Contents
-- [Naming Conventions](#naming-conventions)
-  - [Git and GitHub](#git-and-github)
-  - [Files](#files)
-  - [Directories](#directories)
-  - [Variables](#variables)
-  - [Functions](#functions)
-  - [Backend Routes](#backend-routes)
-  - [Database](#database)
-- [Source Code Management]
-- 
-- [Development Guide](#development-guide)
-- [Git Methodology](#git-methodology)
-- [Project Management Methodology](#project-management-methodology)
-- [Technology Stack](#technology-stack)
+> A comprehensive platform for university students to find study partners, create study groups, track progress, and manage study schedules with real-time weather integration and file management.
 
+## 🚀 Quick Start
 
-## Source Control Management
+### One-Command Setup
 
-### Git Itself: The Stupid Content Tracker
-For this project, we have chosen **Git** as our source control system. Git, famously described by Linus Torvalds as *“the stupid content tracker”*, is a **non-linear, distributed, and fast** version control system. Unlike older centralized systems, Git tracks snapshots of the entire project rather than just individual file changes. This design enables:
+**Linux/macOS:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
 
-- **Non-linear development** – branches and merges are cheap and easy, allowing parallel work on features or fixes.
-- **Distributed workflow** – every developer has a full local copy of the repository, including complete history.
-- **Speed** – operations like commits, diffs, and merges are extremely fast.
+**Windows:**
+```cmd
+setup-complete.bat
+```
 
-Other VCS alternatives exist, including Mercurial, Subversion, and Fossil. While functional, these systems are less widely adopted in modern open-source and enterprise projects. We chose Git not only for its **technical advantages** but also for its **wide adoption**, ensuring a large community, extensive documentation, and seamless compatibility with most tools and services. This makes Git the ideal choice for collaboration, maintainability, and long-term project support.
+**Manual Setup:**
+```bash
+npm run install:all
+npm run dev
+```
 
----
+**Quick Setup (Non-Interactive):**
+```bash
+./setup.sh --quick
+```
 
-### Git is Non-Opinionated
-Git itself is **non-opinionated**, meaning it does not enforce rules on:
+**Setup Script Options:**
+```bash
+./setup.sh --help          # Show help and available options
+./setup.sh --quick         # Quick setup with defaults
+./setup.sh --test          # Run tests only
+./setup.sh --seed          # Seed database only
+./setup.sh --dev           # Start development servers only
+./setup.sh --no-tests      # Skip running tests
+./setup.sh --no-seed       # Skip database seeding
+./setup.sh --no-git        # Skip Git hooks setup
+```
 
-- How commits are structured
-- How branches are named
-- How versions are tracked
-- How the repository is organized
+## 📋 Prerequisites
 
-This flexibility is powerful but can lead to **inconsistent workflows, messy commit history, and technical debt** if left unchecked.
+- **Node.js 20+** - [Download here](https://nodejs.org/)
+- **npm 8+** - Comes with Node.js
+- **Git** - [Download here](https://git-scm.com/)
+- **Firebase Project** - [Create here](https://console.firebase.google.com/)
 
-To maintain clarity and prevent code rot, we have **imposed our own structured conventions**:
+## 🏗️ What This Platform Provides
 
-- **Commit message conventions** – using **Conventional Commits**
-- **Branching strategy** – adopting **GitHub Flow** with clear naming conventions
-- **Versioning rules** – following **Semantic Versioning (SemVer)**
-- **Workflow standards** – defining consistent processes for features, fixes, and releases
+### ✅ Complete Development Environment
+- **Frontend**: React 19+ with TypeScript, Vite, Tailwind CSS
+- **Backend**: Node.js 20+ with Express.js, Firebase Admin SDK
+- **Database**: Firebase Firestore with comprehensive schema
+- **Storage**: Firebase Storage for file management
+- **Authentication**: Firebase Auth with Google OAuth
+- **External APIs**: OpenWeatherMap integration
 
-By adding this “opinionation,” we ensure that Git’s flexibility becomes a strength rather than a source of confusion.
+### ✅ Sprint 2 Features Implemented
+- **Find Study Partners**: Match students based on shared modules/topics
+- **Create Study Groups**: Group creation, joining, chat functionality
+- **Progress Tracking**: Log completed topics and study hours
+- **Session Planning**: Schedule study sessions with reminders
+- **Weather Integration**: Real-time Wits campus weather
+- **File Management**: PDF coursework file upload/download
+- **Bug Tracking**: Integrated bug reporting system
+- **Notifications**: Firebase Cloud Messaging integration
 
----
+### ✅ Production-Ready Features
+- **Health Checks**: Comprehensive monitoring endpoints
+- **Error Handling**: Graceful error recovery and logging
+- **Rate Limiting**: Configurable request throttling
+- **Security**: CORS, Helmet, input validation
+- **Performance**: Caching, compression, optimization
+- **Testing**: 50%+ code coverage with unit and integration tests
 
-### Using Git Well: Commit Messages
-For commit messages, we follow the **[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard**, which enforces **machine-readable, consistent, and meaningful messages**.
+## 🎯 Success Criteria
 
-**Key rules:**
+Your development environment is ready when:
+- [ ] `npm run dev` starts both servers without errors
+- [ ] Frontend loads at http://localhost:5173
+- [ ] Backend health check passes at http://localhost:8080/health
+- [ ] All tests pass with `npm test`
+- [ ] Database seeding works with `npm run seed:db`
+- [ ] Weather API integration shows real data
+- [ ] File upload/download works in development
+- [ ] Authentication flow works end-to-end
 
-- Write in **imperative present tense** (e.g., “fix bug” instead of “fixed bug”)
-- Describe **what changed, not why**
-- Make each commit **atomic** – one logical change per commit
+## 🔧 Available Commands
 
-**Commit types we use for this project include:**
+### Development
+```bash
+npm run dev              # Start both frontend and backend
+npm run dev:frontend     # Start only frontend
+npm run dev:backend      # Start only backend
+```
+
+### Testing
+```bash
+npm test                 # Run all tests
+npm run test:unit        # Run unit tests only
+npm run test:integration # Run integration tests only
+npm run test:watch       # Run tests in watch mode
+npm run test:coverage    # Run tests with coverage report
+```
+
+### Code Quality
+```bash
+npm run lint             # Run linting
+npm run lint:fix         # Fix linting issues
+npm run format           # Format code
+npm run format:check     # Check code formatting
+```
+
+### Database
+```bash
+npm run seed:db          # Seed database with test data
+npm run seed:test        # Seed test database
+```
+
+### Health & Monitoring
+```bash
+npm run health:check     # Check server health
+curl http://localhost:8080/health/detailed  # Detailed health status
+```
+
+## 🌐 Development URLs
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8080
+- **Health Check**: http://localhost:8080/health
+- **Detailed Health**: http://localhost:8080/health/detailed
+- **API Documentation**: http://localhost:8080/docs (when generated)
+
+## 📁 Project Structure
+
+```
+campus-study-buddy/
+├── frontend/                 # React frontend application
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   │   ├── auth/         # Authentication components
+│   │   │   ├── weather/      # Weather widget
+│   │   │   ├── files/        # File management
+│   │   │   ├── bugs/         # Bug tracking
+│   │   │   └── notifications/ # Notifications panel
+│   │   ├── pages/           # Page components
+│   │   ├── context/         # React context providers
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── lib/             # Utility functions
+│   │   └── firebase/        # Firebase configuration
+│   ├── public/              # Static assets
+│   └── package.json
+├── backend/                 # Node.js backend API
+│   ├── src/
+│   │   ├── routes/          # API route handlers
+│   │   │   ├── weather.js   # Weather API integration
+│   │   │   ├── files.js     # File management API
+│   │   │   ├── notifications.js # Notifications API
+│   │   │   ├── bugs.js      # Bug tracking API
+│   │   │   ├── groups.js    # Study groups API
+│   │   │   ├── partners.js  # Partner matching API
+│   │   │   ├── progress.js  # Progress tracking API
+│   │   │   └── schedule.js  # Session scheduling API
+│   │   ├── middleware/      # Express middleware
+│   │   │   ├── auth.js      # Authentication middleware
+│   │   │   └── errorHandler.js # Error handling
+│   │   ├── scripts/         # Database seeding scripts
+│   │   └── __tests__/       # Test files
+│   ├── service-account.json # Firebase service account key
+│   └── package.json
+├── db/                      # Database documentation
+│   └── schema.md           # Complete database schema
+├── scripts/                 # Development scripts
+├── docs/                    # Documentation
+├── tests/                   # End-to-end tests
+├── .env                     # Environment variables
+├── package.json             # Root package.json
+└── README.md
+```
+
+## 🔧 Environment Configuration
+
+### Required Environment Variables
+
+#### Backend (.env)
+```env
+# Server Configuration
+NODE_ENV=development
+PORT=8080
+
+# Firebase Configuration
+FIREBASE_PROJECT_ID=sd2025law
+GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
+
+# External APIs
+OPENWEATHER_API_KEY=your_openweather_api_key_here
+WEATHER_CACHE_DURATION=300000
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:3000,http://localhost:5173,http://localhost:5174
+
+# File Upload Configuration
+MAX_FILE_SIZE=10485760
+ALLOWED_FILE_TYPES=application/pdf
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Notification Configuration
+FCM_SERVER_KEY=your_fcm_server_key_here
+```
+
+#### Frontend (.env.local)
+```env
+# Firebase Web App Configuration
+VITE_FIREBASE_API_KEY=your_firebase_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=sd2025law.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=sd2025law
+VITE_FIREBASE_STORAGE_BUCKET=sd2025law.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id_here
+VITE_FIREBASE_APP_ID=your_firebase_app_id_here
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
+```
+
+### Getting API Keys
+
+#### 1. Firebase Configuration
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Select your project (sd2025law)
+3. Go to **Project Settings** → **General**
+4. Scroll down to **Your apps** section
+5. Copy the configuration values to your `.env.local` file
+
+#### 2. Firebase Service Account Key
+1. Go to **Project Settings** → **Service Accounts**
+2. Click **Generate New Private Key**
+3. Download the JSON file
+4. Save it as `backend/service-account.json`
+
+#### 3. OpenWeatherMap API Key
+1. Go to [OpenWeatherMap](https://openweathermap.org/api)
+2. Sign up for a free account
+3. Get your API key from the dashboard
+4. Add it to your backend `.env` file
+
+## 🗄️ Database Schema
+
+The project includes a comprehensive Firebase Firestore schema with 11 collections:
+
+1. **users** - User profiles and preferences
+2. **study_groups** - Group information and membership
+3. **group_messages** - Chat messages within groups
+4. **study_sessions** - Individual study session records
+5. **progress_tracking** - User progress on modules and topics
+6. **notifications** - User notifications and messages
+7. **scheduled_notifications** - Scheduled reminders
+8. **coursework_files** - PDF file metadata
+9. **bugs** - Bug reports and issue tracking
+10. **bug_activities** - Activity log for bug reports
+11. **user_feedback** - User feedback and suggestions
+
+### Database Setup
+```bash
+# Seed database with sample data
+npm run seed:db
+
+# Seed test database
+npm run seed:test
+```
+
+## 🧪 Testing Strategy
+
+### Test Coverage Requirements
+- **Minimum 50% code coverage** for all modules
+- **Unit tests** for all utility functions and middleware
+- **Integration tests** for all API endpoints
+- **Mock services** for external dependencies
+
+### Test Structure
+```
+backend/src/__tests__/
+├── unit/                    # Unit tests
+│   ├── routes/             # Route unit tests
+│   ├── middleware/         # Middleware tests
+│   └── utils/              # Utility function tests
+├── integration/            # Integration tests
+│   ├── api.integration.test.js
+│   └── database.integration.test.js
+└── setup.js                # Test setup configuration
+```
+
+### Running Tests
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run in watch mode
+npm run test:watch
+
+# Run specific test file
+npm test -- weather.test.js
+```
+
+## 🔐 Security Features
+
+### Authentication & Authorization
+- Firebase ID token verification
+- Role-based access control
+- Secure session management
+- JWT token validation
+
+### Data Protection
+- Input validation and sanitization
+- File upload security (type/size validation)
+- Rate limiting (100 requests/15 minutes)
+- CORS configuration
+- Environment variable protection
+
+### Privacy Compliance
+- User data minimization
+- Secure file storage
+- Audit logging
+- Data retention policies
+
+## 📊 Monitoring & Health Checks
+
+### Health Check Endpoints
+- `GET /health` - Basic health status
+- `GET /health/detailed` - Detailed service status
+- `GET /health/database` - Database connectivity
+- `GET /health/external` - External API status
+- `GET /health/metrics` - Performance metrics
+
+### Monitoring Features
+- Real-time service status
+- Performance metrics
+- Error tracking
+- Request logging
+- Database query monitoring
+
+## 🐳 Docker Support
+
+### Development with Docker
+```bash
+# Start all services
+docker-compose -f docker-compose.dev.yml up
+
+# Build and start
+docker-compose -f docker-compose.dev.yml up --build
+
+# Stop services
+docker-compose -f docker-compose.dev.yml down
+```
+
+### Services Included
+- **Backend API** - Node.js application
+- **Frontend** - React development server
+- **Redis** - Caching and sessions
+- **Nginx** - Reverse proxy (optional)
+- **Prometheus** - Metrics collection (optional)
+- **Grafana** - Monitoring dashboards (optional)
+
+## 🔄 CI/CD Integration
+
+### GitHub Actions
+The project includes GitHub Actions workflow for:
+- Automated testing on push/PR
+- Code quality checks
+- Build verification
+- Deployment preparation
+
+### Pre-commit Hooks
+- Automatic linting
+- Code formatting
+- Test execution
+- Security scanning
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### 1. Firebase Connection Issues
+```bash
+# Check if service account key exists
+ls -la backend/service-account.json
+
+# Verify Firebase project ID
+grep FIREBASE_PROJECT_ID backend/.env
+```
+
+#### 2. Port Already in Use
+```bash
+# Kill process on port 8080 (Linux/macOS)
+lsof -ti:8080 | xargs kill -9
+
+# Kill process on port 5173 (Linux/macOS)
+lsof -ti:5173 | xargs kill -9
+
+# Windows: Use Task Manager or
+taskkill /f /im node.exe
+```
+
+#### 3. Module Not Found Errors
+```bash
+# Clear node_modules and reinstall
+npm run clean
+npm run install:all
+```
+
+#### 4. Test Failures
+```bash
+# Run tests with verbose output
+npm test -- --verbose
+
+# Run specific test file
+npm test -- weather.test.js
+
+# Check test coverage
+npm run test:coverage
+```
+
+### Getting Help
+1. Check the [Issues](https://github.com/your-repo/issues) page
+2. Review the [API Documentation](http://localhost:8080/docs)
+3. Check the [Database Schema](db/schema.md)
+4. Run health checks: `npm run health:check`
+
+## 🚀 Deployment
+
+### Environment Setup
+1. **Backend (Render.com)**:
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Environment Variables: Copy from `backend/.env`
+
+2. **Frontend (Vercel)**:
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Environment Variables: Copy from `frontend/.env.local`
+
+### Production Checklist
+- [ ] Firebase project configured
+- [ ] Environment variables set
+- [ ] Service account key uploaded
+- [ ] OpenWeatherMap API key configured
+- [ ] Database indexes created
+- [ ] Security rules deployed
+- [ ] Domain configured
+- [ ] SSL certificates active
+
+## 📚 Project Management & Development Standards
+
+### Git Workflow
+We use **GitHub Flow** with structured conventions:
+
+#### Commit Message Standards
+Following **Conventional Commits** standard:
 
 | Type       | Purpose                                         | Example                                     |
 |------------|-------------------------------------------------|---------------------------------------------|
@@ -72,86 +472,61 @@ For commit messages, we follow the **[Conventional Commits](https://www.conventi
 | **perf**   | Performance improvements                        | `perf: optimize image loading`             |
 | **test**   | Add or update tests                             | `test: add unit tests for login module`    |
 | **chore**  | Maintenance tasks                               | `chore: update project dependencies`       |
-| **remove** | Remove files or code                             | `remove: delete temporary debug script`    |
 
-**Example commits from the project:**
-
-feat: add search functionality to product page
-fix(#42): correct misalignment on navbar
-docs: add API usage example to README
-style: reformat App.js for consistent indentation
-refactor: simplify payment validation logic
-
-## References
-
-- Git Kernel Patches
-- Conventional Commits
-- Brendan Griffiths, Lecture 4
-- Branching Strategy
-
----
-
-### Branching Strategy
-We use **GitHub Flow** as our branching methodology because it supports short-lived feature/fix branches, continuous integration, and rapid deployment cycles, aligning with our project’s iterative workflow.
-
-**Branching conventions we follow:**
-
-- **Always existing branches:** `main`, `release`, `stable`
-- **Feature/fix branches:**
-- 
-<type>/<developer>
-sprint-<i>/ticket-<j>
-<developer>
-
-Where `<type>` can be `feature` or `fix`.  
-
-This structure allows developers to work independently while keeping the repository organized, simplifies pull requests and reviews, and maintains traceability between features, fixes, and the responsible developers.
-
-### Versioning
-We follow **Semantic Versioning (SemVer)** to manage releases consistently:
-
-- **Format:** `x.y.z` → `major.minor.patch`
-- **x (major):** backward-incompatible changes
-- **y (minor):** backward-compatible new features
-- **z (patch):** bug fixes
-
-Alternative schemes like **Calendar Versioning (CalVer)** were considered, but SemVer was chosen for its clarity and compatibility with standard tooling.
-
-**Example version updates:**
-1.15.2 → 1.16.0  (minor feature added)
-1.21.7 → 1.21.8  (patch/fix applied)
-
-Reference: [SemVer.org](https://semver.org/)
-
-### Consistency is Key
-Throughout this project, we recognize that **consistency is more important than any specific tool or workflow**. By following structured commit messages, branch naming, GitHub Flow, and SemVer:
-
-- We keep identifiers, branches, and commits predictable.
-- We maintain a clean, traceable history.
-- We reduce the risk of technical debt and code rot.
-
-This approach ensures Git’s non-opinionated flexibility is leveraged as a **strength**, while our team-imposed conventions maintain order, clarity, and maintainability.
-
-## Project Methodology and Management
+#### Branching Strategy
+- **Always existing branches**: `main`, `release`, `stable`
+- **Feature/fix branches**: `<type>/<developer>` or `sprint-<i>/ticket-<j>`
+- **Versioning**: Semantic Versioning (SemVer) `x.y.z`
 
 ### Agile Methodology
-For this project, we have adopted **Agile methodology** to ensure flexibility, iterative development, and continuous feedback. Agile allows our team to:
+- **Sprint-based development** with 2-week iterations
+- **GitHub Projects** for task management
+- **Continuous integration** and deployment
+- **Regular stakeholder reviews** and feedback
 
-- Break work into manageable units (sprints) to deliver features incrementally.
-- Respond quickly to changes in requirements or priorities.
-- Collaborate closely with stakeholders and team members for continuous improvement.
-- Maintain high transparency and visibility of progress through regular stand-ups, sprint planning, and reviews.
+## 🎯 Next Steps
 
-Using Agile ensures that we can adapt to new insights or changes while maintaining focus on delivering a high-quality, functional product.
+1. **Explore the Codebase**: Start with the dashboard and API endpoints
+2. **Run Tests**: Ensure all tests pass
+3. **Make Changes**: Try modifying components and routes
+4. **Add Features**: Implement new functionality
+5. **Deploy**: Follow deployment guides for production
+
+## 📞 Support
+
+### Getting Help
+- **Bug Reports**: Use the integrated bug tracker
+- **Feature Requests**: Submit through the feedback system
+- **Documentation**: Check the comprehensive guides
+- **Community**: Join the user community
+
+### Contact Information
+- **Project Repository**: [GitHub Repository]
+- **Database Schema**: `./db/schema.md`
+- **API Documentation**: Available in Swagger UI
 
 ---
 
-### GitHub Projects for Project Management
-To manage tasks, track progress, and maintain visibility of work items, we use **GitHub Projects**. This tool allows us to:
+## 🎉 Conclusion
 
-- Organize tasks using **issues** and **cards** on Kanban-style boards.
-- Link branches, pull requests, and commits to specific tasks for traceability.
-- Track sprint progress and identify blockers quickly.
-- Prioritize work and assign tasks to individual developers efficiently.
+This development setup provides a complete, production-ready environment for the Campus Study Buddy platform. With comprehensive testing, monitoring, and documentation, you can confidently develop, test, and deploy features.
 
-By integrating **GitHub Projects** with our Git workflow, we maintain a **single source of truth** for both code and project management, ensuring the team remains aligned and accountable throughout the development lifecycle.
+**Ready to start coding! 🚀**
+
+### Quick Commands Reference
+```bash
+# Start development
+npm run dev
+
+# Run tests
+npm test
+
+# Check health
+curl http://localhost:8080/health
+
+# Seed database
+npm run seed:db
+
+# Generate docs
+npm run docs:generate
+```
