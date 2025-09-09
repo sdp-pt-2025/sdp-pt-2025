@@ -1,6 +1,6 @@
 import express from 'express';
-//import admin from 'firebase-admin';
-import { admin } from "../firebase/config.js";
+import admin from 'firebase-admin';
+//import { admin } from "../firebase/config.js";
 import { body, validationResult } from 'express-validator';
 
 const router = express.Router();
