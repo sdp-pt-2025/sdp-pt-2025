@@ -23,51 +23,54 @@ const app = express();
 
 // Initialize Firebase Admin
 if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
-      projectId: process.env.FIREBASE_PROJECT_ID
-    });
-    console.log('✅ Firebase Admin initialized successfully');
-  } catch (error) {
-    console.error('❌ Firebase Admin initialization failed:', error.message);
-  }
+    try {
+        admin.initializeApp({
+            credential: admin.credential.applicationDefault(),
+            projectId: process.env.FIREBASE_PROJECT_ID,
+        });
+        console.log("✅ Firebase Admin initialized successfully");
+    } catch (error) {
+        console.error(
+            "❌ Firebase Admin initialization failed:",
+            error.message,
+        );
+    }
 } else {
-  console.log(
-    '⚠️  Firebase Admin not initialized - no service account credentials found'
-  );
-  console.log(
-    '📝 To enable Firebase Admin, set GOOGLE_APPLICATION_CREDENTIALS in your .env file'
-  );
+    console.log(
+        "⚠️  Firebase Admin not initialized - no service account credentials found",
+    );
+    console.log(
+        "📝 To enable Firebase Admin, set GOOGLE_APPLICATION_CREDENTIALS in your .env file",
+    );
 }
 
 // Middleware
 app.use(helmet());
 app.use(compression());
 app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? ['https://campus-study.vercel.app']
-        : ['http://localhost:3000', 'http://localhost:5173'],
-    credentials: true
-  })
+    cors({
+        origin:
+            process.env.NODE_ENV === "production"
+                ? ["https://campus-study.vercel.app"]
+                : ["http://localhost:3000", "http://localhost:5173"],
+        credentials: true,
+    }),
 );
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
-  message: {
-    error: 'Too many requests',
-    message: 'Too many requests from this IP, please try again later.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+    message: {
+        error: "Too many requests",
+        message: "Too many requests from this IP, please try again later.",
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
-app.use('/api/', limiter);
-app.use(express.json({ limit: '10mb' }));
+app.use("/api/", limiter);
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // Public endpoints (no authentication required)
@@ -85,19 +88,19 @@ app.use("/api/bugs", verifyToken, bugsRouter);
 
 // Global error handler
 app.use((err, req, res, _next) => {
-  console.error('Global error handler:', err);
-  res.status(500).json({
-    error: 'Internal server error',
-    message:
-      process.env.NODE_ENV === 'development'
-        ? err.message
-        : 'Something went wrong'
-  });
+    console.error("Global error handler:", err);
+    res.status(500).json({
+        error: "Internal server error",
+        message:
+            process.env.NODE_ENV === "development"
+                ? err.message
+                : "Something went wrong",
+    });
 });
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+    res.status(404).json({ error: "Route not found" });
 });
 
 export default app;
