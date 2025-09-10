@@ -46,14 +46,11 @@ const StudyGroupManager = () => {
   const [newGoal, setNewGoal] = useState("");
 
   const availableModules = [
-    "CS101 - Introduction to Programming",
-    "MATH201 - Calculus II",
-    "PHYS301 - Quantum Physics",
-    "ENG102 - Academic Writing",
-    "BIO250 - Molecular Biology",
-    "CHEM150 - Organic Chemistry",
-    "COMS3011 - Algorithms",
-    "MATH101 - Calculus"
+    "COMS3012 - COMPUTER GRAPHICS AND VISUALIZATION",
+    "COMS3021 - SOFTWARE DESIGN PROJECT",
+    "COMS3002 - OPERATING SYSTEMS",
+    "COMS3212 - MACHINE LEARNING",
+    
   ];
 
   const popularTags = [
