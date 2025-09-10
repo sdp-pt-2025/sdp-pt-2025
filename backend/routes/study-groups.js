@@ -159,7 +159,8 @@ router.post("/", async (req, res) => {
             isPublic = true,
             tags = [],
             location,
-            schedule
+            schedule,
+            email
             
         } = req.body;
 
@@ -185,7 +186,7 @@ router.post("/", async (req, res) => {
                 const newUser = await prisma.user.create({
                     data: {
                         uid: createdBy,
-                        email: `${createdBy}@temp.com`, // Temporary email
+                        email: email, 
                         displayName: createdByName || "New User",
                         university: "Wits", 
                         studentId: "2546382",
