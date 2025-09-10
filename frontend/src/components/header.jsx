@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 import { motion } from "framer-motion";
 
@@ -31,11 +30,13 @@ export function Logo({ className = "" }) {
 
 // Header Component
 export function Header({ user, UserMenuComponent }) {
+    console.log('Header rendering with:', { user, UserMenuComponent });
     return (
         <motion.header
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             className="relative z-10 px-6 py-6"
+            // style={{ backgroundColor: 'red' }}
         >
             <nav className="max-w-6xl mx-auto flex items-center justify-between">
                 <Logo />

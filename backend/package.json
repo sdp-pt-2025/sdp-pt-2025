@@ -1,6 +1,7 @@
 {
     "name": "sdp-backend-api",
     "version": "1.0.0",
+    "proxy": "http://localhost:3080",
     "description": "",
     "repository": {
         "type": "git",
@@ -16,7 +17,15 @@
         "test": "node --experimental-vm-modules node_modules/.bin/jest",
         "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
         "lint": "npx eslint .",
-        "lint:fix": "npx eslint . --fix"
+        "lint:fix": "npx eslint . --fix",
+        "db:generate": "prisma generate",
+        "db:push": "prisma db push",
+        "db:migrate": "prisma migrate dev",
+        "db:studio": "prisma studio",
+        "db:seed": "node prisma/seed.js",
+        "migrate:db": "npx prisma migrate deploy",
+        "migrate:users": "node scripts/migrateUsers.js",
+        "migrate:users:dry-run": "node scripts/migrateUsers.js --dry-run"
     },
     "devDependencies": {
         "@eslint/css": "^0.10.0",
@@ -29,9 +38,17 @@
         "jest": "^30.0.5",
         "jsonc-eslint-parser": "^2.4.0",
         "nodemon": "^3.1.10",
+        "prisma": "^6.15.0",
         "supertest": "^7.1.4"
     },
     "dependencies": {
-        "express": "^5.1.0"
+        "@prisma/client": "^6.15.0",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "firebase-admin": "^13.5.0",
+        "uuid": "^13.0.0"
+    },
+    "prisma": {
+        "seed": "node prisma/seed.js"
     }
 }

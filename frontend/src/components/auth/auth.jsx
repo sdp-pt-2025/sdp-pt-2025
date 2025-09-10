@@ -150,13 +150,7 @@ export function UserMenu({ user }) {
             >
               Profile
             </a>
-            <a
-              href="/settings"
-              className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Settings
-            </a>
+           
             <hr className="my-2 border-gray-200" />
             <button
               onClick={handleSignOut}

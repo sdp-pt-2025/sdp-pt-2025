@@ -122,6 +122,7 @@ export default function Sidebar() {
 
         {/* Footer */}
         <div className="p-4 border-t border-slate-700 text-xs text-gray-400">
+          
           {isDesktopCollapsed
             ? "©"
             : `© ${new Date().getFullYear()} StudyBuddy`}

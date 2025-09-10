@@ -1,1 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+    <linearGradient id="pageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="shadowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748B" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#475569" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Book shadow -->
+  <ellipse cx="128" cy="220" rx="100" ry="12" fill="url(#shadowGradient)"/>
+  
+  <!-- Left page -->
+  <path d="M40 60 L40 180 Q40 190 50 190 L120 190 Q128 185 128 180 L128 65 Q128 60 120 60 Z" 
+        fill="url(#pageGradient)" 
+        stroke="#CBD5E1" 
+        stroke-width="2"/>
+  
+  <!-- Right page -->
+  <path d="M128 65 Q128 60 136 60 L206 60 Q216 60 216 70 L216 180 Q216 190 206 190 L136 190 Q128 185 128 180 Z" 
+        fill="url(#pageGradient)" 
+        stroke="#CBD5E1" 
+        stroke-width="2"/>
+  
+  <!-- Book spine/binding -->
+  <rect x="125" y="60" width="6" height="130" fill="url(#bookGradient)"/>
+  <line x1="128" y1="60" x2="128" y2="190" stroke="#1E40AF" stroke-width="1"/>
+  
+  <!-- Left page content lines -->
+  <line x1="55" y1="85" x2="110" y2="85" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="55" y1="100" x2="105" y2="100" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="55" y1="115" x2="108" y2="115" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="55" y1="130" x2="100" y2="130" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="55" y1="145" x2="110" y2="145" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Right page content lines -->
+  <line x1="145" y1="85" x2="200" y2="85" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="145" y1="100" x2="195" y2="100" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="145" y1="115" x2="198" y2="115" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="145" y1="130" x2="190" y2="130" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="145" y1="145" x2="200" y2="145" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Study buddy indicator - small icons -->
+  <circle cx="75" cy="165" r="8" fill="#3B82F6"/>
+  <circle cx="74" cy="163" r="3" fill="white"/>
+  <circle cx="76" cy="167" r="2" fill="white"/>
+  
+  <circle cx="180" cy="165" r="8" fill="#10B981"/>
+  <circle cx="179" cy="163" r="3" fill="white"/>
+  <circle cx="181" cy="167" r="2" fill="white"/>
+  
+  <!-- Connection line between study buddies -->
+  <path d="M83 165 Q128 150 173 165" 
+        stroke="#6B7280" 
+        stroke-width="2" 
+        stroke-dasharray="3,3" 
+        fill="none"/>
+</svg>

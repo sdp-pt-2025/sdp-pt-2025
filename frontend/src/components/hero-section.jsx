@@ -193,7 +193,7 @@ export function HeroSection({
           className="mb-16"
         >
           {user ? (
-            <CTAButton href="/dashboard" onClick={onNavigateToDashboard}>
+            <CTAButton href="/dashboard" onClick={onNavigateToDashboard} className="bg-blue-800 z-151 text-white">
               Go to Dashboard
             </CTAButton>
           ) : (
