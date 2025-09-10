@@ -65,7 +65,7 @@ const config = {
             navbar: {
                 title: "Campus Study Buddy",
                 logo: {
-                    alt: "My Site Logo",
+                    alt: "Logo",
                     src: "img/emoji-gif.webp",
                 },
                 items: [
