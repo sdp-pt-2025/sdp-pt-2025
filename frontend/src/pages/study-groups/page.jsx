@@ -21,6 +21,9 @@ import {
 } from "lucide-react";
 import Sidebar from "../../components/Sidebar/sidebar";
 import { AuthContext } from "../../context/AuthContext";
+import { signInWithGoogle } from "../../firebase/auth";
+import { auth } from "../../firebase/init";
+// import { AuthProvider } from "../../context/useAuthContextUser";
 
 const StudyGroupManager = () => {
   const [view, setView] = useState("browse"); // "browse" | "create" | "group-detail"
@@ -64,7 +67,14 @@ const StudyGroupManager = () => {
 
   const BASE_URL = 'http://localhost:3000'
 
+  const {uid, email, displayName} = auth.currentUser;
   
+
+
+
+  
+
+  // console.log(userInfo, "The google info========")
 
   // Fetch study groups
   useEffect(() => {
@@ -531,13 +541,14 @@ const StudyGroupManager = () => {
           description: formData.description,
           module: formData.moduleCode,
           topic: formData.topic || '',
-          createdBy: 'campus-study-member', 
-          createdByName: 'Clement Jele', 
+          createdBy: uid, 
+          createdByName: displayName, 
           maxMembers: formData.maxMembers,
           isPublic: !formData.isPrivate,
           tags: formData.tags,
           location: null, 
-          schedule: null 
+          schedule: null ,
+          email
         })
       });
 

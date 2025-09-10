@@ -116,6 +116,7 @@ function AuthProvider({ children }) {
       // Create in Neon with provided data
       const neonUser = await createUserInNeon(firebaseUser, userData);
       setNeonUser(neonUser);
+      console.log(userCredential, "for neon", neonUser, "- neon user")
 
       return userCredential;
     } catch (error) {
