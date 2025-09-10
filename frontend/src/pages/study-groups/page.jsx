@@ -20,6 +20,7 @@ import {
   Star
 } from "lucide-react";
 import Sidebar from "../../components/Sidebar/sidebar";
+import { AuthContext } from "../../context/AuthContext";
 
 const StudyGroupManager = () => {
   const [view, setView] = useState("browse"); // "browse" | "create" | "group-detail"
@@ -63,6 +64,8 @@ const StudyGroupManager = () => {
 
   const BASE_URL = 'http://localhost:3000'
 
+  
+
   // Fetch study groups
   useEffect(() => {
     fetchStudyGroups();
@@ -101,7 +104,7 @@ const StudyGroupManager = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 'current-user-id' // This should come from your auth context
+          userId: 'current-user-id' 
         })
       });
 
@@ -528,13 +531,13 @@ const StudyGroupManager = () => {
           description: formData.description,
           module: formData.moduleCode,
           topic: formData.topic || '',
-          createdBy: 'current-user-id', // This should come from your auth context
-          createdByName: 'Current User Name', // This should come from your auth context
+          createdBy: 'campus-study-member', 
+          createdByName: 'Clement Jele', 
           maxMembers: formData.maxMembers,
           isPublic: !formData.isPrivate,
           tags: formData.tags,
-          location: null, // You can extend this later
-          schedule: null // You can extend this later
+          location: null, 
+          schedule: null 
         })
       });
 

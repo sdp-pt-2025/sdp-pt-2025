@@ -160,6 +160,7 @@ router.post("/", async (req, res) => {
             tags = [],
             location,
             schedule
+            
         } = req.body;
 
         // Validation

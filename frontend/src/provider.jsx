@@ -4,7 +4,7 @@ import { AuthContext } from "./context/AuthContext";
 import { onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
-// Backend API base URL - adjust based on your setup
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 function AuthProvider({ children }) {
@@ -20,7 +20,7 @@ function AuthProvider({ children }) {
         email: firebaseUser.email,
         displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
         photoURL: firebaseUser.photoURL || null,
-        // Default values - merge with any additional data provided
+        
         university: additionalData.university || 'University of The Witwatersrand',
         studentId: additionalData.studentId || `user_${firebaseUser.uid.substring(0, 8)}`,
         yearOfStudy: additionalData.yearOfStudy || 1,
@@ -28,7 +28,7 @@ function AuthProvider({ children }) {
         modules: additionalData.modules || [],
         lastLoginAt: new Date().toISOString(),
         isActive: true,
-        ...additionalData // Override with any additional data
+        ...additionalData 
       };
 
       const response = await fetch(`${API_BASE_URL}/users`, {
@@ -99,10 +99,12 @@ function AuthProvider({ children }) {
       return result.user;
     } catch (error) {
       console.error('Error during user migration:', error);
-      // Don't throw to avoid breaking the login flow
+     
       return null;
     }
   };
+
+  //the code below come from firebase docs.
 
   // Enhanced signup function
   const signUp = async (email, password, userData = {}) => {
@@ -174,7 +176,7 @@ function AuthProvider({ children }) {
             console.log('User not found in Neon, migrating...');
             userData = await migrateExistingUser(firebaseUser);
           } else {
-            // Update last login time
+            
             await fetch(`${API_BASE_URL}/users/${firebaseUser.uid}`, {
               method: 'PATCH',
               headers: {
