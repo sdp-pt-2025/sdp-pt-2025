@@ -1,4 +1,55 @@
 {
+    "name": "campus-study-buddy-api",
+    "version": "1.0.0",
+    "description": "Campus Study Buddy Backend API with Firebase Auth",
+    "type": "module",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js --watch src",
+        "build": "npm install",
+        "test": "node --experimental-vm-modules node_modules/.bin/jest",
+        "test:unit": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=unit",
+        "test:integration": "node --experimental-vm-modules node_modules/.bin/jest --testPathPattern=integration",
+        "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+        "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
+        "test:ci": "node --experimental-vm-modules node_modules/.bin/jest --ci --coverage --watchAll=false",
+        "lint": "npx eslint .",
+        "lint:fix": "npx eslint . --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "clean": "rm -rf coverage dist node_modules/.cache",
+        "seed:db": "node src/scripts/seed-database.js",
+        "seed:test": "NODE_ENV=test node src/scripts/seed-database.js",
+        "health:check": "curl -f http://localhost:8080/health || exit 1",
+        "docs:generate": "swagger-jsdoc -d swaggerDef.js src/routes/*.js -o swagger.json",
+        "docs:serve": "swagger-ui-serve swagger.json"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.1",
+        "express": "^5.1.0",
+        "express-validator": "^7.2.1",
+        "firebase-admin": "^13.4.0",
+        "helmet": "^8.1.0",
+        "multer": "^1.4.5-lts.1",
+        "axios": "^1.7.9",
+        "node-cron": "^3.0.3",
+        "socket.io": "^4.8.1",
+        "express-rate-limit": "^7.4.1",
+        "compression": "^1.7.5"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.10",
+        "jest": "^30.0.5",
+        "supertest": "^7.1.4",
+        "eslint": "^9.32.0"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    }
+}
+{
     "name": "sdp-backend-api",
     "version": "1.0.0",
     "proxy": "http://localhost:3080",
