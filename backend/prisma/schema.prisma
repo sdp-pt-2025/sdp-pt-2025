@@ -1,0 +1,260 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(cuid())
+  uid         String    @unique // Firebase UID
+  email       String    @unique
+  displayName String
+  photoURL    String?
+  university  String
+  studentId   String
+  yearOfStudy Int
+  faculty     String
+  modules     String[]
+  fcmToken    String?
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Study preferences (embedded as JSON)
+  studyPreferences Json? // Will store the nested object
+  availability     Json? // Will store the weekly availability
+
+  // Relationships
+  createdGroups       StudyGroup[]              @relation("GroupCreator")
+  groupMemberships    GroupMember[]
+  studySessions       StudySession[]
+  progressRecords     ProgressTracking[]
+  sentMessages        GroupMessage[]
+  notifications       Notification[]
+  uploadedFiles       CourseworkFile[]
+  reportedBugs        Bug[]
+  sessionParticipants StudySessionParticipant[]
+
+  @@map("users")
+}
+
+// Study groups
+model StudyGroup {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  module         String
+  topic          String
+  createdBy      String
+  createdByName  String
+  memberCount    Int      @default(0)
+  maxMembers     Int      @default(10)
+  isPublic       Boolean  @default(true)
+  tags           String[]
+  status         String   @default("active")
+  lastActivityAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Location and schedule as JSON
+  location Json?
+  schedule Json?
+
+  // Relationships
+  creator  User           @relation("GroupCreator", fields: [createdBy], references: [uid])
+  members  GroupMember[]
+  messages GroupMessage[]
+
+  @@map("study_groups")
+}
+
+// Group membership junction table
+model GroupMember {
+  id      String @id @default(cuid())
+  userId  String
+  groupId String
+
+  user  User       @relation(fields: [userId], references: [uid], onDelete: Cascade)
+  group StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@map("group_members")
+}
+
+// Group chat messages
+model GroupMessage {
+  id          String    @id @default(cuid())
+  groupId     String
+  senderId    String
+  senderName  String
+  message     String
+  messageType String    @default("text")
+  attachments String[]
+  replyTo     String?
+  edited      Boolean   @default(false)
+  editedAt    DateTime?
+  reactions   Json? // Store reactions as JSON object
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  group  StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  sender User       @relation(fields: [senderId], references: [uid], onDelete: Cascade)
+
+  @@map("group_messages")
+}
+
+// Study sessions
+model StudySession {
+  id          String   @id @default(cuid())
+  userId      String
+  groupId     String?
+  module      String
+  topic       String
+  sessionType String // individual, group
+  duration    Int
+  startTime   DateTime
+  endTime     DateTime
+  completed   Boolean  @default(false)
+  rating      Int?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  location   Json? // type, details
+  activities Json? // Array of activities
+
+  // Relationships
+  user         User                      @relation(fields: [userId], references: [uid], onDelete: Cascade)
+  participants StudySessionParticipant[]
+
+  @@map("study_sessions")
+}
+
+// Study session participants (for group sessions)
+model StudySessionParticipant {
+  id        String @id @default(cuid())
+  sessionId String
+  userId    String
+
+  session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [uid], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+  @@map("study_session_participants")
+}
+
+// Progress tracking
+model ProgressTracking {
+  id                   String    @id @default(cuid())
+  userId               String
+  module               String
+  topic                String
+  status               String // not_started, in_progress, completed
+  completionPercentage Int       @default(0)
+  studyHours           Float     @default(0)
+  lastStudied          DateTime?
+  difficulty           Int? // 1-5 scale
+  confidence           Int? // 1-5 scale
+  notes                String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  resources  Json? // Array of resource objects
+  milestones Json? // Array of milestone objects
+
+  user User @relation(fields: [userId], references: [uid], onDelete: Cascade)
+
+  @@unique([userId, module, topic])
+  @@map("progress_tracking")
+}
+
+// Notifications
+model Notification {
+  id           String    @id @default(cuid())
+  userId       String
+  senderId     String
+  senderName   String
+  title        String
+  body         String
+  type         String // session_reminder, group_invite, etc.
+  data         Json? // Additional notification data
+  read         Boolean   @default(false)
+  readAt       DateTime?
+  sentAt       DateTime  @default(now())
+  fcmMessageId String?
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [uid], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// Coursework files
+model CourseworkFile {
+  id               String    @id @default(cuid())
+  fileName         String
+  storagePath      String
+  downloadUrl      String
+  uploadedBy       String
+  fileSize         Int
+  mimeType         String
+  isPublic         Boolean   @default(false)
+  tags             String[]
+  description      String?
+  courseCode       String
+  topic            String
+  downloadCount    Int       @default(0)
+  lastDownloadedAt DateTime?
+  uploadedAt       DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  uploader User @relation(fields: [uploadedBy], references: [uid], onDelete: Cascade)
+
+  @@map("coursework_files")
+}
+
+// Bug reports
+model Bug {
+  id               String    @id @default(cuid())
+  title            String
+  description      String
+  severity         String // low, medium, high, critical
+  category         String // ui, api, performance, etc.
+  status           String    @default("open") // open, in_progress, resolved, closed
+  priority         Int       @default(3) // 1-10 scale
+  reporterId       String
+  reporterName     String
+  reporterEmail    String
+  assignedTo       String?
+  assignedToName   String?
+  stepsToReproduce String?
+  expectedBehavior String?
+  actualBehavior   String?
+  attachments      String[] // Array of attachment URLs
+  tags             String[]
+  votes            Int       @default(0)
+  voters           String[] // Array of user IDs who voted
+  watchers         String[] // Array of user IDs watching this bug
+  resolvedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Environment and comments as JSON
+  environment Json? // browser, os, device, version info
+  comments    Json? // Array of comment objects
+
+  reporter User @relation(fields: [reporterId], references: [uid], onDelete: Cascade)
+
+  @@map("bugs")
+}

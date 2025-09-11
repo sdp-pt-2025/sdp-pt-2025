@@ -1,2 +1,16 @@
 node_modules/
+<<<<<<< HEAD
 coverage/
+=======
+coverage/
+/generated/prisma
+
+
+firebase-service-account.json
+*.json
+!package.json
+!package-lock.json
+
+.env
+not-git.js
+>>>>>>> clement-sg
