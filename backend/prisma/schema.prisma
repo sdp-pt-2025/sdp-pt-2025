@@ -34,6 +34,8 @@ model User {
   // Study preferences (embedded as JSON)
   studyPreferences Json? // Will store the nested object
   availability     Json? // Will store the weekly availability
+  joinRequests     GroupJoinRequest[] @relation("UserJoinRequests")
+  adminResponses   GroupJoinRequest[] @relation("AdminResponses")
 
   // Relationships
   createdGroups       StudyGroup[]              @relation("GroupCreator")
@@ -72,9 +74,10 @@ model StudyGroup {
   schedule Json?
 
   // Relationships
-  creator  User           @relation("GroupCreator", fields: [createdBy], references: [uid])
-  members  GroupMember[]
-  messages GroupMessage[]
+  joinRequests GroupJoinRequest[]
+  creator      User               @relation("GroupCreator", fields: [createdBy], references: [uid])
+  members      GroupMember[]
+  messages     GroupMessage[]
 
   @@map("study_groups")
 }
@@ -222,6 +225,24 @@ model CourseworkFile {
   uploader User @relation(fields: [uploadedBy], references: [uid], onDelete: Cascade)
 
   @@map("coursework_files")
+}
+
+model GroupJoinRequest {
+  id          String    @id @default(cuid())
+  userId      String
+  groupId     String
+  status      String    @default("pending") // pending, approved, rejected
+  requestedAt DateTime  @default(now())
+  respondedAt DateTime?
+  respondedBy String?
+  message     String? // Optional message from requester
+
+  user      User       @relation("UserJoinRequests", fields: [userId], references: [uid], onDelete: Cascade)
+  group     StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  responder User?      @relation("AdminResponses", fields: [respondedBy], references: [uid])
+
+  @@unique([userId, groupId])
+  @@map("group_join_requests")
 }
 
 // Bug reports

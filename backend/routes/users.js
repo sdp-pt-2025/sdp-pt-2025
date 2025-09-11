@@ -118,7 +118,7 @@ router.patch("/:uid", async (req, res) => {
         const { uid } = req.params;
         const updateData = req.body;
 
-        // Remove fields that shouldn't be updated directly
+        
         delete updateData.uid;
         delete updateData.id;
         delete updateData.createdAt;

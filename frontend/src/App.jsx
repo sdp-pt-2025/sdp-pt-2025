@@ -12,6 +12,8 @@ import Chat from "./pages/chat/components/ChatList.jsx"
 import Profile from "./pages/profile/page.jsx"
 import ChatWindow from "./pages/chat/ChatWindow.jsx";
 
+import { Toaster } from "react-hot-toast";
+
 function App() {
     return (
         <BrowserRouter>
@@ -27,6 +29,7 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                    
                 </Routes>
+                <Toaster position="top-right"/>
             </Provider>
         </BrowserRouter>
     );
