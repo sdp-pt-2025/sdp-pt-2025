@@ -62,7 +62,7 @@ const StudyGroupManager = () => {
     "lab-work",
   ];
 
-  const BASE_URL = 'http://localhost:3000'
+  const BASE_URL = 'http://localhost:8080'
 
   const {uid, email, displayName} = auth.currentUser;
   

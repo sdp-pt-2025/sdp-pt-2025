@@ -5,7 +5,7 @@ import { onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/aut
 import React, { useEffect, useState } from "react";
 
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

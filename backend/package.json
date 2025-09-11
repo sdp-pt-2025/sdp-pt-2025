@@ -26,24 +26,26 @@
         "docs:serve": "swagger-ui-serve swagger.json"
     },
     "dependencies": {
+        "axios": "^1.7.9",
+        "compression": "^1.7.5",
         "cors": "^2.8.5",
         "dotenv": "^17.2.1",
         "express": "^5.1.0",
+        "express-rate-limit": "^7.4.1",
         "express-validator": "^7.2.1",
         "firebase-admin": "^13.4.0",
         "helmet": "^8.1.0",
         "multer": "^1.4.5-lts.1",
-        "axios": "^1.7.9",
         "node-cron": "^3.0.3",
-        "socket.io": "^4.8.1",
-        "express-rate-limit": "^7.4.1",
-        "compression": "^1.7.5"
+        "socket.io": "^4.8.1"
     },
     "devDependencies": {
-        "nodemon": "^3.1.10",
+        "@prisma/client": "^6.16.0",
+        "eslint": "^9.32.0",
         "jest": "^30.0.5",
-        "supertest": "^7.1.4",
-        "eslint": "^9.32.0"
+        "nodemon": "^3.1.10",
+        "prisma": "^6.16.0",
+        "supertest": "^7.1.4"
     },
     "engines": {
         "node": ">=20.0.0"
