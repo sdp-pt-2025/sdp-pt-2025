@@ -54,7 +54,7 @@ const StudyGroupsList = ({
             text: "Enter",
             icon: MessageCircle,
             onClick: () => onEnterChat(group),
-            className: "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className: "bg-gray-100! hover:bg-gray-200! text-gray-700!"
           }
         };
         
@@ -64,13 +64,13 @@ const StudyGroupsList = ({
             text: "Member - Enter",
             icon: CheckCircle,
             onClick: () => onEnterChat(group),
-            className: "bg-green-600 hover:bg-green-700 text-white"
+            className: "bg-green-600! hover:bg-green-700! text-white"
           },
           secondary: {
             text: "View",
             icon: Eye,
             onClick: () => onViewGroup(group.id),
-            className: "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className: "bg-gray-100! hover:bg-gray-200! text-gray-700"
           }
         };
         
@@ -80,13 +80,13 @@ const StudyGroupsList = ({
             text: "Pending",
             icon: Clock,
             onClick: null,
-            className: "bg-yellow-500 text-white cursor-not-allowed opacity-75"
+            className: "bg-yellow-500! text-white cursor-not-allowed opacity-75"
           },
           secondary: {
             text: "View",
             icon: Eye,
             onClick: () => onViewGroup(group.id),
-            className: "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className: "bg-gray-100! hover:bg-gray-200! text-gray-700"
           }
         };
         
@@ -97,14 +97,14 @@ const StudyGroupsList = ({
             icon: UserPlus,
             onClick: group.memberCount >= group.maxMembers ? null : () => onJoinRequest(group.id),
             className: group.memberCount >= group.maxMembers 
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
+              ? "bg-gray-300! text-gray-500! cursor-not-allowed"
+              : "bg-blue-600! hover:bg-blue-700! text-white"
           },
           secondary: {
             text: "View",
             icon: Eye,
             onClick: () => onViewGroup(group.id),
-            className: "bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className: "bg-gray-100! hover:bg-gray-200! text-gray-700"
           }
         };
     }

@@ -856,4 +856,642 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+// Add these routes to your existing study-groups router
+
+// POST /api/study-groups/:id/sessions - Start a study session
+router.post("/:id/sessions", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { 
+            userId, 
+            module, 
+            topic, 
+            sessionType = "group",
+            location,
+            activities,
+            notes 
+        } = req.body;
+
+        // Verify user is member and get group info
+        const member = await prisma.groupMember.findUnique({
+            where: {
+                userId_groupId: {
+                    userId: userId,
+                    groupId: id
+                }
+            },
+            include: {
+                user: {
+                    select: {
+                        displayName: true
+                    }
+                }
+            }
+        });
+
+        if (!member) {
+            return res.status(403).json({
+                success: false,
+                error: "You must be a member to start sessions"
+            });
+        }
+
+        // Get group details
+        const studyGroup = await prisma.studyGroup.findUnique({
+            where: { id },
+            include: {
+                members: {
+                    include: {
+                        user: {
+                            select: {
+                                uid: true,
+                                displayName: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!studyGroup) {
+            return res.status(404).json({
+                success: false,
+                error: "Study group not found"
+            });
+        }
+
+        // Check if there's already an active session
+        const activeSession = await prisma.studySession.findFirst({
+            where: {
+                groupId: id,
+                completed: false
+            }
+        });
+
+        if (activeSession) {
+            return res.status(400).json({
+                success: false,
+                error: "There's already an active session in this group"
+            });
+        }
+
+        const startTime = new Date();
+
+        // Create study session
+        const session = await prisma.$transaction(async (tx) => {
+            // Create the session
+            const newSession = await tx.studySession.create({
+                data: {
+                    userId,
+                    groupId: id,
+                    module,
+                    topic,
+                    sessionType,
+                    duration: 0, // Will be calculated on completion
+                    startTime,
+                    endTime: startTime, // Placeholder, will be updated on completion
+                    location: location || null,
+                    activities: activities || null,
+                    notes: notes || null
+                }
+            });
+
+            // Add all group members as participants
+            const participants = studyGroup.members.map(member => ({
+                sessionId: newSession.id,
+                userId: member.userId
+            }));
+
+            await tx.studySessionParticipant.createMany({
+                data: participants
+            });
+
+            // Create session start message
+            await tx.groupMessage.create({
+                data: {
+                    groupId: id,
+                    senderId: userId,
+                    senderName: member.user.displayName,
+                    message: `📚 Study session started: ${module} - ${topic}`,
+                    messageType: "system"
+                }
+            });
+
+            return newSession;
+        });
+
+        // Create notifications for all members except the creator
+        const notifications = studyGroup.members
+            .filter(member => member.userId !== userId)
+            .map(member => ({
+                userId: member.userId,
+                senderId: userId,
+                senderName: member.user.displayName,
+                title: "Study Session Started",
+                body: `${member.user.displayName} started a study session in "${studyGroup.name}"`,
+                type: "session_started",
+                data: {
+                    groupId: id,
+                    sessionId: session.id,
+                    groupName: studyGroup.name,
+                    module,
+                    topic
+                }
+            }));
+
+        if (notifications.length > 0) {
+            await prisma.notification.createMany({
+                data: notifications
+            });
+        }
+
+        res.json({
+            success: true,
+            data: session,
+            message: "Study session started successfully"
+        });
+
+    } catch (error) {
+        console.error("Error starting study session:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to start study session",
+            message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+        });
+    }
+});
+
+// PUT /api/study-groups/:id/sessions/:sessionId/end - End a study session
+router.put("/:id/sessions/:sessionId/end", async (req, res) => {
+    try {
+        const { id, sessionId } = req.params;
+        const { userId, rating, notes, completionPercentage = 100 } = req.body;
+
+        // Verify session exists and user is authorized
+        const session = await prisma.studySession.findUnique({
+            where: { id: sessionId },
+            include: {
+                user: {
+                    select: {
+                        displayName: true
+                    }
+                }
+            }
+        });
+
+        if (!session || session.groupId !== id) {
+            return res.status(404).json({
+                success: false,
+                error: "Session not found"
+            });
+        }
+
+        if (session.userId !== userId) {
+            return res.status(403).json({
+                success: false,
+                error: "Only the session creator can end the session"
+            });
+        }
+
+        if (session.completed) {
+            return res.status(400).json({
+                success: false,
+                error: "Session is already completed"
+            });
+        }
+
+        const endTime = new Date();
+        const duration = Math.floor((endTime - session.startTime) / 1000 / 60); // Duration in minutes
+
+        // Update session and create progress tracking
+        const updatedSession = await prisma.$transaction(async (tx) => {
+            // Update the session
+            const updated = await tx.studySession.update({
+                where: { id: sessionId },
+                data: {
+                    endTime,
+                    duration,
+                    completed: true,
+                    rating,
+                    notes: notes || session.notes
+                }
+            });
+
+            // Get all participants
+            const participants = await tx.studySessionParticipant.findMany({
+                where: { sessionId },
+                include: {
+                    user: {
+                        select: {
+                            uid: true,
+                            displayName: true
+                        }
+                    }
+                }
+            });
+
+            // Update progress tracking for all participants
+            const studyHours = duration / 60; // Convert to hours
+
+            for (const participant of participants) {
+                await tx.progressTracking.upsert({
+                    where: {
+                        userId_module_topic: {
+                            userId: participant.userId,
+                            module: session.module,
+                            topic: session.topic
+                        }
+                    },
+                    update: {
+                        studyHours: {
+                            increment: studyHours
+                        },
+                        lastStudied: endTime,
+                        completionPercentage: Math.max(completionPercentage, 0),
+                        status: completionPercentage >= 100 ? "completed" : "in_progress",
+                        updatedAt: endTime
+                    },
+                    create: {
+                        userId: participant.userId,
+                        module: session.module,
+                        topic: session.topic,
+                        status: completionPercentage >= 100 ? "completed" : "in_progress",
+                        completionPercentage,
+                        studyHours,
+                        lastStudied: endTime
+                    }
+                });
+            }
+
+            // Create session end message
+            await tx.groupMessage.create({
+                data: {
+                    groupId: id,
+                    senderId: userId,
+                    senderName: session.user.displayName,
+                    message: `✅ Study session completed: ${session.module} - ${session.topic} (${duration} minutes)`,
+                    messageType: "system"
+                }
+            });
+
+            return updated;
+        });
+
+        res.json({
+            success: true,
+            data: updatedSession,
+            message: "Study session ended successfully"
+        });
+
+    } catch (error) {
+        console.error("Error ending study session:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to end study session",
+            message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+        });
+    }
+});
+
+// POST /api/study-groups/:id/sessions/:sessionId/join - Join an active session
+router.post("/:id/sessions/:sessionId/join", async (req, res) => {
+    try {
+        const { id, sessionId } = req.params;
+        const { userId } = req.body;
+
+        // Verify user is member
+        const member = await prisma.groupMember.findUnique({
+            where: {
+                userId_groupId: {
+                    userId: userId,
+                    groupId: id
+                }
+            },
+            include: {
+                user: {
+                    select: {
+                        displayName: true
+                    }
+                }
+            }
+        });
+
+        if (!member) {
+            return res.status(403).json({
+                success: false,
+                error: "You must be a member to join sessions"
+            });
+        }
+
+        // Check if session exists and is active
+        const session = await prisma.studySession.findUnique({
+            where: { id: sessionId }
+        });
+
+        if (!session || session.groupId !== id || session.completed) {
+            return res.status(400).json({
+                success: false,
+                error: "Session not found or already completed"
+            });
+        }
+
+        // Check if already a participant
+        const existingParticipant = await prisma.studySessionParticipant.findUnique({
+            where: {
+                sessionId_userId: {
+                    sessionId,
+                    userId
+                }
+            }
+        });
+
+        if (existingParticipant) {
+            return res.status(400).json({
+                success: false,
+                error: "You are already participating in this session"
+            });
+        }
+
+        // Add as participant
+        await prisma.studySessionParticipant.create({
+            data: {
+                sessionId,
+                userId
+            }
+        });
+
+        // Create join message
+        await prisma.groupMessage.create({
+            data: {
+                groupId: id,
+                senderId: userId,
+                senderName: member.user.displayName,
+                message: `👋 ${member.user.displayName} joined the study session`,
+                messageType: "system"
+            }
+        });
+
+        res.json({
+            success: true,
+            message: "Successfully joined the study session"
+        });
+
+    } catch (error) {
+        console.error("Error joining study session:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to join study session",
+            message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+        });
+    }
+});
+
+// GET /api/study-groups/:id/sessions/active - Get active session
+router.get("/:id/sessions/active", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.query;
+
+        // Verify user is member
+        const isMember = await prisma.groupMember.findUnique({
+            where: {
+                userId_groupId: {
+                    userId: userId,
+                    groupId: id
+                }
+            }
+        });
+
+        if (!isMember) {
+            return res.status(403).json({
+                success: false,
+                error: "You must be a member to view sessions"
+            });
+        }
+
+        const activeSession = await prisma.studySession.findFirst({
+            where: {
+                groupId: id,
+                completed: false
+            },
+            include: {
+                user: {
+                    select: {
+                        uid: true,
+                        displayName: true
+                    }
+                },
+                participants: {
+                    include: {
+                        user: {
+                            select: {
+                                uid: true,
+                                displayName: true,
+                                photoURL: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        res.json({
+            success: true,
+            data: activeSession
+        });
+
+    } catch (error) {
+        console.error("Error fetching active session:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to fetch active session",
+            message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+        });
+    }
+});
+
+// GET /api/study-groups/:id/sessions/history - Get session history
+router.get("/:id/sessions/history", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId, limit = 20, offset = 0 } = req.query;
+
+        // Verify user is member
+        const isMember = await prisma.groupMember.findUnique({
+            where: {
+                userId_groupId: {
+                    userId: userId,
+                    groupId: id
+                }
+            }
+        });
+
+        if (!isMember) {
+            return res.status(403).json({
+                success: false,
+                error: "You must be a member to view session history"
+            });
+        }
+
+        const sessions = await prisma.studySession.findMany({
+            where: {
+                groupId: id,
+                completed: true
+            },
+            include: {
+                user: {
+                    select: {
+                        uid: true,
+                        displayName: true
+                    }
+                },
+                participants: {
+                    include: {
+                        user: {
+                            select: {
+                                uid: true,
+                                displayName: true,
+                                photoURL: true
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: {
+                startTime: "desc"
+            },
+            take: parseInt(limit),
+            skip: parseInt(offset)
+        });
+
+        const totalCount = await prisma.studySession.count({
+            where: {
+                groupId: id,
+                completed: true
+            }
+        });
+
+        res.json({
+            success: true,
+            data: {
+                sessions,
+                pagination: {
+                    total: totalCount,
+                    limit: parseInt(limit),
+                    offset: parseInt(offset),
+                    hasMore: parseInt(offset) + parseInt(limit) < totalCount
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error("Error fetching session history:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to fetch session history",
+            message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+        });
+    }
+});
+
+// GET /api/study-groups/:id/progress - Get group progress summary
+router.get("/:id/progress", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.query;
+
+        // Verify user is member
+        const isMember = await prisma.groupMember.findUnique({
+            where: {
+                userId_groupId: {
+                    userId: userId,
+                    groupId: id
+                }
+            }
+        });
+
+        if (!isMember) {
+            return res.status(403).json({
+                success: false,
+                error: "You must be a member to view progress"
+            });
+        }
+
+        // Get group members
+        const group = await prisma.studyGroup.findUnique({
+            where: { id },
+            include: {
+                members: {
+                    include: {
+                        user: {
+                            select: {
+                                uid: true,
+                                displayName: true,
+                                photoURL: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const memberIds = group.members.map(m => m.userId);
+
+        // Get progress for all members
+        const progress = await prisma.progressTracking.findMany({
+            where: {
+                userId: {
+                    in: memberIds
+                }
+            },
+            include: {
+                user: {
+                    select: {
+                        uid: true,
+                        displayName: true,
+                        photoURL: true
+                    }
+                }
+            },
+            orderBy: {
+                studyHours: "desc"
+            }
+        });
+
+        // Get session stats
+        const sessionStats = await prisma.studySession.aggregate({
+            where: {
+                groupId: id,
+                completed: true
+            },
+            _sum: {
+                duration: true
+            },
+            _count: {
+                id: true
+            }
+        });
+
+        res.json({
+            success: true,
+            data: {
+                progress,
+                stats: {
+                    totalSessions: sessionStats._count.id || 0,
+                    totalMinutes: sessionStats._sum.duration || 0,
+                    totalHours: Math.round((sessionStats._sum.duration || 0) / 60 * 100) / 100
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error("Error fetching group progress:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to fetch progress data",
+            message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+        });
+    }
+});
+
 export default router;

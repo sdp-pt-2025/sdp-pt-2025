@@ -1,11 +1,16 @@
+import { LogOut } from "lucide-react";
 import { menuItems } from "../../lib/constants/features";
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { signOutUser } from "../../firebase/auth";
+import toast from "react-hot-toast";
 
 
 export default function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
+  const navigation = useNavigate()
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -23,6 +28,16 @@ export default function Sidebar() {
     }
     return () => document.removeEventListener("click", handleClickOutside);
   }, [isMobileOpen]);
+
+  const handleSignOut = async () => {
+    console.log("Signing out...");
+    return (
+      navigation('/'),
+      await signOutUser()
+      .then(() => toast.success("See you later!"))
+      
+    );
+  }
 
   return (
     <>
@@ -85,7 +100,7 @@ export default function Sidebar() {
 
           <button
             onClick={() => setIsDesktopCollapsed(!isDesktopCollapsed)}
-            className="hidden md:block text-gray-400 hover:text-white transition-colors bg-transparent"
+            className="hidden md:block text-gray-400 hover:text-white transition-colors bg-transparent!"
             aria-label={
               isDesktopCollapsed ? "Expand sidebar" : "Collapse sidebar"
             }
@@ -122,10 +137,13 @@ export default function Sidebar() {
 
         {/* Footer */}
         <div className="p-4 border-t border-slate-700 text-xs text-gray-400">
+          <Button className="bg-red-700! rounded-md! text-3xl hover:bg-red-600!" onClick={()=>(handleSignOut())}>
+          {isDesktopCollapsed ?
+          (<LogOut className="w-6 h-6 text-white"/> )  : ("Sign out")}
+            
+          </Button>
           
-          {isDesktopCollapsed
-            ? "©"
-            : `© ${new Date().getFullYear()} StudyBuddy`}
+          
         </div>
       </div>
     </>

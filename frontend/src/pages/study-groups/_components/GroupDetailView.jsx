@@ -26,19 +26,24 @@ const GroupDetailView = ({
   currentUserId,
   baseUrl
 }) => {
+  // console.log(group)
   const [joinRequests, setJoinRequests] = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
+  console.log(group)
+  
 
   const isCreator = group.createdBy === currentUserId;
 //   const isMember = group.userStatus === "member" || group.userStatus === "creator";
 
   useEffect(() => {
+    
     if (isCreator) {
       fetchJoinRequests();
     }
   }, [isCreator]);
 
   const fetchJoinRequests = async () => {
+    console.log(group)
     try {
       setLoadingRequests(true);
       const response = await fetch(
@@ -99,7 +104,7 @@ const GroupDetailView = ({
         return (
           <button
             onClick={() => onEnterChat(group)}
-            className="bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition flex items-center gap-2"
+            className="bg-purple-600! text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700! transition flex items-center gap-2"
           >
             <MessageCircle className="w-5 h-5" />
             Enter Chat
@@ -110,7 +115,7 @@ const GroupDetailView = ({
         return (
           <button
             onClick={() => onEnterChat(group)}
-            className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center gap-2"
+            className="bg-green-600! text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700! transition flex items-center gap-2"
           >
             <MessageCircle className="w-5 h-5" />
             Enter Chat
@@ -121,7 +126,7 @@ const GroupDetailView = ({
         return (
           <button
             disabled
-            className="bg-yellow-500 text-white px-6 py-3 rounded-xl font-semibold cursor-not-allowed opacity-75 flex items-center gap-2"
+            className="bg-yellow-500! text-white px-6 py-3 rounded-xl font-semibold cursor-not-allowed opacity-75 flex items-center gap-2"
           >
             <Clock className="w-5 h-5" />
             Request Pending
@@ -133,7 +138,7 @@ const GroupDetailView = ({
           <button
             onClick={() => onJoinRequest(group.id)}
             disabled={group.memberCount >= group.maxMembers}
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center gap-2"
+            className="bg-blue-600! text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700! disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center gap-2"
           >
             <UserPlus className="w-5 h-5" />
             {group.memberCount >= group.maxMembers ? 'Group Full' : 'Request to Join'}
@@ -169,7 +174,7 @@ const GroupDetailView = ({
                 <div className="flex items-center gap-2">
                   {group.isPublic ? (
                     <>
-                      <Globe className="w-5 h-5 text-green-500" />
+                      <Globe className="w-5 h-5 text-green-500!" />
                       <span className="text-gray-900">Public Group</span>
                     </>
                   ) : (
@@ -305,7 +310,8 @@ const GroupDetailView = ({
                   <div>
                     <p className="text-sm text-purple-600 font-medium">Location</p>
                     <p className="text-lg font-semibold text-purple-800">
-                      {group.location.type === 'online' ? 'Online' : group.location.details}
+                      {group.location.type ? group.location.type : group.location}
+                      {group.location.detail && group.location.detail}
                     </p>
                   </div>
                 </div>

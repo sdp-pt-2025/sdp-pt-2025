@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -31,7 +29,7 @@ const StudyGroupManager = () => {
   // Fetch study groups with user status
   useEffect(() => {
     fetchStudyGroups();
-  }, [searchTerm, selectedModule]);
+  }, [ selectedModule]);
 
   const fetchStudyGroups = async () => {
     try {

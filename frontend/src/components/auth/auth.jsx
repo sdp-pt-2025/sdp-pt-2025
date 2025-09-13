@@ -38,11 +38,11 @@ export function AuthButton() {
         whileTap={{ scale: 0.95 }}
         onClick={handleGoogleSignIn}
         disabled={isLoading}
-        className="bg-white text-gray-800 px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 flex items-center gap-3 border border-gray-200"
+        className="bg-white text-gray-800! px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 flex items-center gap-3 border border-gray-200"
       >
         {isLoading ? (
           <>
-            <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-400 border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-400! border-t-transparent"></div>
             Signing in...
           </>
         ) : (
@@ -99,7 +99,7 @@ export function UserMenu({ user }) {
       <motion.button
         whileHover={{ scale: 1.05 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 text-white hover:bg-white/30 transition-all"
+        className="flex items-center gap-3 bg-white/20! backdrop-blur-md rounded-lg px-4 py-2 text-white hover:bg-white/30! transition-all"
       >
         {user.photoURL ? (
           <img
@@ -141,7 +141,7 @@ export function UserMenu({ user }) {
           className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden"
         >
           <div className="p-2">
-            <a
+            {/* <a
               href="/dashboard"
               className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
               onClick={() => setIsOpen(false)}
@@ -156,7 +156,7 @@ export function UserMenu({ user }) {
               Profile
             </a>
            
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-gray-200" /> */}
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}

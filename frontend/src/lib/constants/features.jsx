@@ -11,19 +11,19 @@ import  { ReactNode } from "react";
 /** @type {Feature[]} */
 const features = [
     {
-        icon: <UserIcon size={24} />,
+        icon: <UserIcon size={50} color="white"/>,
         title: "Find Study Partners",
         description:
       "Match with students in your courses and subjects to find compatible study companions."
     },
     {
-        icon: <UsersIcon size={24} />,
+        icon: <UsersIcon size={50} color="white"/>,
         title: "Study Groups",
         description:
       "Create and join collaborative group study sessions with your peers."
     },
     {
-        icon: <BookOpen size={24} />,
+        icon: <BookOpen size={50} color="white"/>,
         title: "Progress Tracking",
         description:
       "Monitor your study hours, track completed sessions, and visualize your learning progress."
@@ -31,6 +31,30 @@ const features = [
 ];
 
 export default features;
+
+
+export const Testimonials = [
+    {
+      quote: "StudyBuddy transformed my university experience. I went from studying alone to having a dedicated group that keeps me motivated and accountable.",
+      name: "Sarah Davids",
+      title: "Computer Science, Wits"
+    },
+    {
+      quote: "The matching algorithm is incredible. I found study partners who complement my weaknesses and help me excel in challenging courses.",
+      name: "Marcus Johnson", 
+      title: "Pre-Med, Wits"
+    },
+    {
+      quote: "Group study sessions became so much more organized and effective. We went from scattered discussions to focused learning.",
+      name: "Emma Rodriguez",
+      title: "Business, UP"
+    },
+    {
+      quote: "I never thought I'd enjoy studying until I found my perfect study group through StudyBuddy. Now it's the highlight of my week.",
+      name: "David Kim",
+      title: "Engineering, UCT"
+    }
+  ];
 
 export const stats = [
     {
@@ -211,7 +235,7 @@ export const menuItems = [
     { icon: "📚", label: "Study Groups", href: "/study-groups" },
     // { icon: "📅", label: "Schedule", href: "/schedule" },
     { icon: "📊", label: "Progress", href: "/progress-tracker" },
-    { icon: "💬", label: "Chat", href: "/chat" },
+    { icon: "💬", label: "Chat", href: "/chats" },
     { icon: "👤", label: "Profile", href: "/profile" },
     
 ];

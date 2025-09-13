@@ -18,6 +18,7 @@ import {
   XCircle
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { Textarea } from "../../../components/ui/textarea"
 
 const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
     //onShowNotifications
@@ -54,7 +55,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -222,7 +223,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
     return (
       <div
         key={message.id}
-        className={`flex items-start gap-3 mb-4 ${isOwn ? 'flex-row-reverse' : ''}`}
+        className={`flex items-start gap-3 mb-4 max-w-3xl  mx-auto ${isOwn ? 'flex-row-reverse' : ''}`}
       >
         {!isOwn && (
           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -296,11 +297,11 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
   }
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-white ">
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between rounded-3xl shadow-md shadow-gray-100 mb-1">
+        <div className="bg-white sticky border border-gray-200 p-1 flex items-center justify-between rounded-2xl shadow-md shadow-gray-100 mb-1">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
@@ -327,12 +328,12 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
                 </span>
               </button>
             )}
-            <button
+            {/* <button
               onClick={() => setShowGroupInfo(!showGroupInfo)}
               className="p-2 hover:bg-gray-100 rounded-lg transition"
             >
               <Info className="w-5 h-5 text-gray-600" />
-            </button>
+            </button> */}
             <button
               onClick={() => setShowMembers(!showMembers)}
               className="p-2 hover:bg-gray-100 rounded-lg transition"
@@ -388,7 +389,17 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
           
           <div className="flex items-center gap-3 justify-center ">
             <div className="flex-1 relative items-center justify-center">
-              <textarea
+              <Textarea 
+              placeholder="Type your message here."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              
+              
+              className="w-full px-4 py-3 pr-12 max-h-[120px]  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 resize-none bg-gray-200"
+
+               />
+              {/* <textarea
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -396,12 +407,12 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
                 rows={1}
                 className="w-full px-4 py-3 pr-12  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 resize-none bg-gray-200"
                 style={{ minHeight: '48px', maxHeight: '120px' }}
-              />
+              /> */}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="absolute right-3 bottom-3 p-1 hover:bg-gray-100 rounded-lg transition"
               >
-                <Paperclip className="w-4 h-4 text-gray-400" />
+                <Paperclip className="w-4 h-4 text-gray-400!" />
               </button>
               <input
                 ref={fileInputRef}
@@ -413,7 +424,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
             <button
               onClick={sendMessage}
               disabled={(!newMessage.trim() && !selectedFile) || sending}
-              className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition flex-shrink-0"
+              className="p-3 bg-blue-600! text-white rounded-xl hover:bg-blue-700! disabled:bg-gray-300 disabled:cursor-not-allowed transition flex-shrink-0"
             >
               {sending ? (
                 <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
@@ -427,7 +438,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
 
       {/* Group Info Sidebar */}
       {showGroupInfo && (
-        <div className="w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto">
+        <div className="w-70 bg-white  p-6 overflow-y-auto">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900">Group Info</h2>
             <button
@@ -500,22 +511,22 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
 
       {/* Members Sidebar */}
       {showMembers && (
-        <div className="w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto">
+        <div className="w-70 bg-blue-900 rounded-4xl ml-2 p-6 overflow-y-auto">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-200">
               Members ({group?.memberCount || 0})
             </h2>
             <button
               onClick={() => setShowMembers(false)}
               className="p-1 hover:bg-gray-100 rounded-lg transition"
             >
-              <X className="w-4 h-4 text-gray-500" />
+              <X className="w-4 h-4 text-gray-300" />
             </button>
           </div>
 
           <div className="space-y-3">
             {group?.members?.map((member) => (
-              <div key={member.id || member.uid} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg">
+              <div key={member.id || member.uid} className="flex items-center gap-3 p-2 hover:bg-blue-500 rounded-lg">
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                   {member.photoURL ? (
                     <img 
@@ -524,13 +535,13 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
                       className="w-full h-full rounded-full object-cover" 
                     />
                   ) : (
-                    <span className="text-blue-600 font-semibold text-sm">
+                    <span className="text-gray-200 font-semibold text-sm">
                       {(member.displayName || 'U').charAt(0).toUpperCase()}
                     </span>
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">{member.displayName}</p>
+                  <p className="font-medium text-gray-200">{member.displayName}</p>
                   {member.yearOfStudy && (
                     <p className="text-sm text-gray-500">Year {member.yearOfStudy}</p>
                   )}
