@@ -14,7 +14,7 @@ const Dashboard = () => {
   const { userData } = useUserData();
   
   console.log(userData, "-------------------------")
-  const BASE_URL = import.meta.env.VITE_PUBLIC_URL || 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_PUBLIC_URL;
 
   // Fetch dashboard data
   const fetchDashboardData = async (userId) => {
