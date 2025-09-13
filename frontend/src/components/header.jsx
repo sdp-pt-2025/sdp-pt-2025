@@ -41,7 +41,8 @@ export function Header({ user, UserMenuComponent }) {
             <nav className="max-w-6xl mx-auto flex items-center justify-between">
                 <Logo />
                 {user && UserMenuComponent && <UserMenuComponent user={user} />}
-                {/* yes */}
+                {/* Injalo */}
+                
             </nav>
         </motion.header>
     );
