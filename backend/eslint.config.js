@@ -27,32 +27,11 @@ export default defineConfig([
         files: ["**/*.json", "**/*.jsonc", "**/*.json5"],
         plugins: { jsonc: jsoncPlugin },
         languageOptions: { parser: jsoncParser, languageId: "jsonc" },
-=======
-    { 
-        files: ["**/*.{js,mjs,cjs}"], 
-        plugins: { js }, 
-        extends: ["js/recommended"], 
-        languageOptions: { globals: { ...globals.browser, ...globals.node } },
-        rules: {
-            "indent": ["error", 4],
-            "quotes": ["error", "double"],
-            "comma-dangle": ["error", "never"],
-            "object-curly-spacing": ["error", "always"],
-            "semi": ["error", "always"],
-            "no-multiple-empty-lines": ["error", { "max": 9999, "maxEOF": 0 }]
-        }
-    },
-    { 
-        files: ["**/*.json", "**/*.jsonc", "**/*.json5"], 
-        plugins: { jsonc: jsoncPlugin }, 
-        languageOptions: { parser: jsoncParser, languageId: "jsonc" }, 
->>>>>>> clement-sg
         rules: {
             "jsonc/indent": ["error", 4],
             "jsonc/quotes": ["error", "double"],
             "jsonc/comma-dangle": ["error", "never"],
             "jsonc/object-curly-spacing": ["error", "always"],
-<<<<<<< HEAD
             "no-multiple-empty-lines": ["error", { max: 9999, maxEOF: 0 }],
         },
     },
@@ -94,7 +73,40 @@ export default defineConfig([
             "json/no-empty-keys": "off",
         },
     },
-=======
+]);
+import js from "@eslint/js";
+import globals from "globals";
+import json from "@eslint/json";
+import markdown from "@eslint/markdown";
+import css from "@eslint/css";
+import jsoncPlugin from "eslint-plugin-jsonc";
+import jsoncParser from "jsonc-eslint-parser";
+import { defineConfig } from "eslint/config";
+
+export default defineConfig([
+    { 
+        files: ["**/*.{js,mjs,cjs}"], 
+        plugins: { js }, 
+        extends: ["js/recommended"], 
+        languageOptions: { globals: { ...globals.browser, ...globals.node } },
+        rules: {
+            "indent": ["error", 4],
+            "quotes": ["error", "double"],
+            "comma-dangle": ["error", "never"],
+            "object-curly-spacing": ["error", "always"],
+            "semi": ["error", "always"],
+            "no-multiple-empty-lines": ["error", { "max": 9999, "maxEOF": 0 }]
+        }
+    },
+    { 
+        files: ["**/*.json", "**/*.jsonc", "**/*.json5"], 
+        plugins: { jsonc: jsoncPlugin }, 
+        languageOptions: { parser: jsoncParser, languageId: "jsonc" }, 
+        rules: {
+            "jsonc/indent": ["error", 4],
+            "jsonc/quotes": ["error", "double"],
+            "jsonc/comma-dangle": ["error", "never"],
+            "jsonc/object-curly-spacing": ["error", "always"],
             "no-multiple-empty-lines": ["error", { "max": 9999, "maxEOF": 0 }]
         }
     },
@@ -111,5 +123,4 @@ export default defineConfig([
             "json/no-empty-keys": "off"
         } 
     }
->>>>>>> clement-sg
 ]);

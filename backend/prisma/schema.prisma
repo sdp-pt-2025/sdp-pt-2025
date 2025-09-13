@@ -1,12 +1,8 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -34,6 +30,8 @@ model User {
   // Study preferences (embedded as JSON)
   studyPreferences Json? // Will store the nested object
   availability     Json? // Will store the weekly availability
+  joinRequests     GroupJoinRequest[] @relation("UserJoinRequests")
+  adminResponses   GroupJoinRequest[] @relation("AdminResponses")
 
   // Relationships
   createdGroups       StudyGroup[]              @relation("GroupCreator")
@@ -46,7 +44,79 @@ model User {
   reportedBugs        Bug[]
   sessionParticipants StudySessionParticipant[]
 
+  // Friend relationships
+  sentFriendRequests     Friendship[] @relation("FriendRequester")
+  receivedFriendRequests Friendship[] @relation("FriendReceiver")
+
+  // Chat relationships
+  chatsAsParticipant1 Chat[]        @relation("ChatParticipant1")
+  chatsAsParticipant2 Chat[]        @relation("ChatParticipant2")
+  sentChatMessages    ChatMessage[]
+
   @@map("users")
+}
+
+model Friendship {
+  id          String    @id @default(cuid())
+  requesterId String // User who sent the friend request
+  receiverId  String // User who received the friend request
+  status      String    @default("pending") // pending, accepted, declined
+  message     String? // Optional message with friend request
+  requestedAt DateTime  @default(now())
+  respondedAt DateTime?
+  acceptedAt  DateTime? // When the request was accepted
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  requester User @relation("FriendRequester", fields: [requesterId], references: [uid], onDelete: Cascade)
+  receiver  User @relation("FriendReceiver", fields: [receiverId], references: [uid], onDelete: Cascade)
+
+  @@unique([requesterId, receiverId])
+  @@map("friendships")
+}
+
+// Chat models
+model Chat {
+  id             String    @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  lastMessageAt  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relationships
+  participant1 User          @relation("ChatParticipant1", fields: [participant1Id], references: [uid], onDelete: Cascade)
+  participant2 User          @relation("ChatParticipant2", fields: [participant2Id], references: [uid], onDelete: Cascade)
+  messages     ChatMessage[]
+
+  @@unique([participant1Id, participant2Id])
+  @@map("chats")
+}
+
+model ChatMessage {
+  id          String    @id @default(cuid())
+  chatId      String
+  senderId    String
+  content     String
+  messageType String    @default("text") // text, image, file, audio, video
+  attachments Json? // Array of attachment objects
+  replyToId   String?
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  edited      Boolean   @default(false)
+  editedAt    DateTime?
+  reactions   Json? // Store reactions as JSON object
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  chat    Chat          @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  sender  User          @relation(fields: [senderId], references: [uid], onDelete: Cascade)
+  replyTo ChatMessage?  @relation("MessageReply", fields: [replyToId], references: [id])
+  replies ChatMessage[] @relation("MessageReply")
+
+  @@map("chat_messages")
 }
 
 // Study groups
@@ -72,9 +142,10 @@ model StudyGroup {
   schedule Json?
 
   // Relationships
-  creator  User           @relation("GroupCreator", fields: [createdBy], references: [uid])
-  members  GroupMember[]
-  messages GroupMessage[]
+  joinRequests GroupJoinRequest[]
+  creator      User               @relation("GroupCreator", fields: [createdBy], references: [uid])
+  members      GroupMember[]
+  messages     GroupMessage[]
 
   @@map("study_groups")
 }
@@ -187,7 +258,7 @@ model Notification {
   senderName   String
   title        String
   body         String
-  type         String // session_reminder, group_invite, etc.
+  type         String // session_reminder, group_invite, friend_request, friend_request_response, etc.
   data         Json? // Additional notification data
   read         Boolean   @default(false)
   readAt       DateTime?
@@ -222,6 +293,24 @@ model CourseworkFile {
   uploader User @relation(fields: [uploadedBy], references: [uid], onDelete: Cascade)
 
   @@map("coursework_files")
+}
+
+model GroupJoinRequest {
+  id          String    @id @default(cuid())
+  userId      String
+  groupId     String
+  status      String    @default("pending") // pending, approved, rejected
+  requestedAt DateTime  @default(now())
+  respondedAt DateTime?
+  respondedBy String?
+  message     String? // Optional message from requester
+
+  user      User       @relation("UserJoinRequests", fields: [userId], references: [uid], onDelete: Cascade)
+  group     StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  responder User?      @relation("AdminResponses", fields: [respondedBy], references: [uid])
+
+  @@unique([userId, groupId])
+  @@map("group_join_requests")
 }
 
 // Bug reports

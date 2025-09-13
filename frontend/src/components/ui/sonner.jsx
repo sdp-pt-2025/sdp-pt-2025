@@ -21,4 +21,4 @@ const Toaster = ({
   );
 }
 
-export { Toaster }
+export default { Toaster }

@@ -9,6 +9,6 @@ describe("GET /api/health", () => {
     });
 <<<<<<< HEAD
 });
-=======
+
 });
->>>>>>> clement-sg
+>>>>>>>>> Temporary merge branch 2

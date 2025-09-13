@@ -10,6 +10,7 @@ import {
 import { auth } from "./init"; 
 
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope("profile");
@@ -165,11 +166,11 @@ function Authentication({ children }) {
         console.log("User signed in:", result.user);
       } else {
         console.error("Sign-in failed:", result.error);
-        alert(result.error);
+        toast.error(result.error);
       }
     } catch (error) {
       console.error("Unexpected error:", error);
-      alert("An unexpected error occurred");
+      toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
