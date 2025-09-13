@@ -16,7 +16,7 @@ const StudyGroupManager = () => {
   const [selectedModule, setSelectedModule] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null);
 
-  const BASE_URL = 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_PUBLIC_URL;
   const { uid, email, displayName } = auth.currentUser;
 
   const availableModules = [
