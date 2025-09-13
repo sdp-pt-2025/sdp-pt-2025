@@ -1,4 +1,7 @@
 node_modules/
+<<<<<<< HEAD
+coverage/
+=======
 coverage/
 /generated/prisma
 
@@ -10,3 +13,4 @@ firebase-service-account.json
 
 .env
 not-git.js
+>>>>>>> clement-sg

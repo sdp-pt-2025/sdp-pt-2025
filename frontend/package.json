@@ -1,6 +1,7 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "campus-buddy",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "private": true,
   "dependencies": {

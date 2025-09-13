@@ -7,5 +7,8 @@ describe("GET /api/health", () => {
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual({ status: "ok" });
     });
+<<<<<<< HEAD
 });
-import request from "supertest";
+
+});
+>>>>>>>>> Temporary merge branch 2

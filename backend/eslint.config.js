@@ -8,6 +8,7 @@ import jsoncParser from "jsonc-eslint-parser";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
+<<<<<<< HEAD
     {
         files: ["**/*.{js,mjs,cjs}"],
         plugins: { js },
