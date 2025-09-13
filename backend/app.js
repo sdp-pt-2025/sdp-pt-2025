@@ -58,4 +58,17 @@ app.get("/", (req, res) => {
         ]
     });
 });
+
+app.use((req, res) => {
+    res.status(404).json({
+      message: 'Route not found',
+      availableRoutes: ["/", "/routes/chat", "/routes/profile", "/routes/study-groups", "/routes/dashboard"]
+    });
+  });
+  
+  const PORT = process.env.PORT || 8080;
+  
+  if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`Server ready on port ${PORT}`));
+  }
 export default app;
