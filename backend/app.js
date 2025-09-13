@@ -19,7 +19,7 @@ app.use("/api/health2", healthRouter2);
 app.use(cors({
     origin: process.env.NODE_ENV === "production" 
         ? ["https://campus-study.vercel.app", "https://sdp-pt-2025-vqfu.vercel.app"] 
-        :  ["http://localhost:5173", "http://localhost:5174"], 
+        :  ["http://localhost:5173", "http://localhost:5174", "https://campus-study.vercel.app"], 
     credentials: true
 }));
 app.use(express.json({ limit: "10mb" }));
