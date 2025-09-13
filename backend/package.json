@@ -1,5 +1,4 @@
 {
-
     "name": "campus-study-buddy-api",
     "version": "1.0.0",
     "description": "Campus Study Buddy Backend API with Firebase Auth",
@@ -46,12 +45,10 @@
         "supertest": "^7.1.4",
         "eslint": "^9.32.0"
     },
-
     "engines": {
-        "node": ">=20.0.0"},
-
+        "node": ">=20.0.0"
+    },
     "prisma": {
         "seed": "node prisma/seed.js"
-
     }
 }
