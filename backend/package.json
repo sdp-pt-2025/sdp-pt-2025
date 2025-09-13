@@ -21,7 +21,7 @@
         "clean": "rm -rf coverage dist node_modules/.cache",
         "seed:db": "node src/scripts/seed-database.js",
         "seed:test": "NODE_ENV=test node src/scripts/seed-database.js",
-        "health:check": "curl -f http://localhost:8080/health || exit 1",
+        "health:check": "curl -f https://campus-study-back.vercel.app/health || exit 1",
         "docs:generate": "swagger-jsdoc -d swaggerDef.js src/routes/*.js -o swagger.json",
         "docs:serve": "swagger-ui-serve swagger.json"
     },

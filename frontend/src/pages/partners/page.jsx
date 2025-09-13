@@ -181,7 +181,7 @@ export default function Partners() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRequestsModalOpen, setIsRequestsModalOpen] = useState(false);
 
-  const BASE_URL = import.meta.env.VITE_PUBLIC_URL || 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_PUBLIC_URL;
   const currentUser = auth.currentUser;
 
   // Fetch all data on component mount

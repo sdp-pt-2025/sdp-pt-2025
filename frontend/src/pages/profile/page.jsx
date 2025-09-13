@@ -12,7 +12,7 @@ const Profile = () => {
   const [error, setError] = useState(null);
 
   // Get current user ID - replace with your auth system
-  const BASE_URL = import.meta.env.VITE_PUBLIC_URL || 'http://localhost:8080';
+  const BASE_URL = import.meta.env.VITE_PUBLIC_URL ;
   const {uid} = auth.currentUser
 
   // Fetch user profile data
