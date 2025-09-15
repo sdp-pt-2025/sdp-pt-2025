@@ -70,12 +70,7 @@ app.options('*', cors(corsOptions));
 
 // Additional
 app.use((req, res, next) => {
-    // Security headers
-    res.header('X-Content-Type-Options', 'nosniff');
-    res.header('X-Frame-Options', 'DENY');
-    res.header('X-XSS-Protection', '1; mode=block');
-    res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
-    
+
     // Additional CORS headers for compatibility
     const origin = req.headers.origin;
     const allowedOrigins = process.env.NODE_ENV === "production" 
