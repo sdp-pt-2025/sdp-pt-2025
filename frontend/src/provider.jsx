@@ -51,6 +51,37 @@ function AuthProvider({ children }) {
     }
   };
 
+  // Function to migrate existing Firebase user to Neon
+  const migrateFirebaseUser = async (firebaseUser) => {
+    try {
+      console.log(`🔄 Migrating Firebase user ${firebaseUser.uid} to Neon...`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/users/${firebaseUser.uid}/migrate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to migrate user');
+      }
+
+      const result = await response.json();
+      console.log(`✅ User migration ${result.migrated ? 'completed' : 'updated'}:`, result.message);
+      return result.user;
+    } catch (error) {
+      console.error('Error migrating user:', error);
+      throw error;
+    }
+  };
+
   // Function to get user from Neon 
   const getNeonUser = async (uid) => {
     try {
@@ -165,11 +196,14 @@ function AuthProvider({ children }) {
           // Step 1: Check if user exists in Neon
           let userData = await getNeonUser(firebaseUser.uid);
           
-         
-          
-            
-            // If migration also fails, create a basic user record
-            if (!userData) {
+          // Step 2: If user doesn't exist in Neon, try migration
+          if (!userData) {
+            console.log('🔄 User not found in Neon, attempting migration...');
+            try {
+              userData = await migrateFirebaseUser(firebaseUser);
+            } catch (migrationError) {
+              console.error('❌ Migration failed:', migrationError);
+              // If migration also fails, create a basic user record
               console.log('⚠️ Migration failed, creating new user record...');
               userData = await createUserInNeon(firebaseUser, {
                 university: 'University of The Witwatersrand',
@@ -178,7 +212,7 @@ function AuthProvider({ children }) {
                 modules: []
               });
             }
-           else {
+          } else {
             // Step 3: User exists, update their last login time
             console.log('🔄 Updating last login time...');
             await updateLastLogin(firebaseUser.uid);
@@ -230,7 +264,8 @@ function AuthProvider({ children }) {
     updateUserProfile,
     checkUserProfileComplete,
     getNeonUser,
-    updateLastLogin
+    updateLastLogin,
+    migrateFirebaseUser
   };
 
   return (
