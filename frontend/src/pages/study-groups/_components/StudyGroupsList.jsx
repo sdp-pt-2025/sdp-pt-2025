@@ -14,7 +14,9 @@ import {
   CheckCircle,
   Clock,
   Settings,
-  User
+  User,
+  ActivityIcon,
+  BookAlertIcon
 } from "lucide-react";
 
 const StudyGroupsList = ({
@@ -164,7 +166,7 @@ const StudyGroupsList = ({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGroups.map((group) => {
-            // console.log(group)
+            console.log(group)
             const buttonConfig = getButtonConfig(group);
             
             return (
@@ -225,7 +227,9 @@ const StudyGroupsList = ({
                       <span className="truncate">
                         {group.location.type ? group.location.type : ""}
                         { " "}
-                        {group.location.details ? group.location.details : group.location}
+                        {group.location.details ? group.location.details : group.location.venue}
+                        {" "}
+                        {group.location.address ? group.location.address : ""}
                       </span>
                     </div>
                   )}
@@ -244,6 +248,28 @@ const StudyGroupsList = ({
                       </span>
                     </div>
                   )}
+
+                  {
+                    group.status && (
+                      <div className="flex items-center gap-1 text-gray-600 mb-4">
+                      <ActivityIcon className="w-4 h-4" />
+                      <span className="text-sm text-blue-600">
+                        { group.status }
+                      </span>
+                    </div>
+                    )
+                  }
+
+                  {
+                    group.topic && (
+                      <div className="flex items-center gap-1 text-gray-600 mb-4">
+                      <BookAlertIcon className="w-4 h-4" />
+                      <span className="text-sm text-gray-800">
+                        Topic <span className="text-sm text-blue-800">{ group.topic }</span>
+                      </span>
+                    </div>
+                    )
+                  }
 
                   {/* Tags */}
                   {group.tags && group.tags.length > 0 && (
