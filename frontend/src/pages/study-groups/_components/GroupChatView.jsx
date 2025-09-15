@@ -357,8 +357,8 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
             </div>
           ) : (
             Object.entries(groupedMessages).map(([date, msgs]) => (
-              <div key={date}>
-                <div className="flex justify-center mb-4 mt-20">
+              <div key={date} className="mt-20">
+                <div className="flex justify-center mb-4">
                   <div className="bg-white px-3 py-1 rounded-full text-xs text-gray-500 shadow-sm">
                     {date}
                   </div>
