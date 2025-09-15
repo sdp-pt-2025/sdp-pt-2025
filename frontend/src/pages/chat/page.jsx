@@ -11,7 +11,7 @@ const ChatPage = () => {
   const location = useLocation();
   const [selectedChatId, setSelectedChatId] = useState(null);
   const currentUser = auth.currentUser;
-  const BASE_URL = import.meta.env.VITE_PUBLIC_URL;
+  const BASE_URL = import.meta.env.BACK_URL;
 
   useEffect(() => {
     // Check if we need to create or navigate to a specific chat
