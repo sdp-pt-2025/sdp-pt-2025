@@ -22,10 +22,10 @@ export const signInWithGoogle = async () => {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
 
-    console.log("Google sign-in successful:", user);
+    // console.log("Google sign-in successful:", user);
     return { success: true, user };
   } catch (error) {
-    console.error("Google sign-in error:", error);
+    // console.error("Google sign-in error:", error);
 
     let errorMessage = "Failed to sign in with Google";
 
@@ -163,7 +163,7 @@ function Authentication({ children }) {
       const result = await signInWithGoogle();
 
       if (result.success) {
-        console.log("User signed in:", result.user);
+        // console.log("User signed in:", result.user);
       } else {
         console.error("Sign-in failed:", result.error);
         toast.error(result.error);

@@ -30,7 +30,7 @@ export default function Sidebar() {
   }, [isMobileOpen]);
 
   const handleSignOut = async () => {
-    console.log("Signing out...");
+    // console.log("Signing out...");
     return (
       navigation('/'),
       await signOutUser()

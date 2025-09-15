@@ -13,7 +13,7 @@ const Dashboard = () => {
   // Get current user data
   const { userData } = useUserData();
   
-  console.log(userData, "-------------------------")
+  // console.log(userData, "-------------------------")
   const BASE_URL = import.meta.env.VITE_PUBLIC_URL;
 
   // Fetch dashboard data

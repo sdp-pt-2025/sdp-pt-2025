@@ -16,7 +16,7 @@ export function AuthButton() {
     try {
       const result = await signInWithGoogle();
       if (result.success) {
-        console.log("User signed in:", result.user);
+        // console.log("User signed in:", result.user);
         toast.success("Successfully signed in!"), {
           duration: 4000,
           position: "middle-center",

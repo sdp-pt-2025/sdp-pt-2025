@@ -74,7 +74,7 @@ function AuthProvider({ children }) {
   // Function to migrate existing user to Neon (gradual migration)
   const migrateExistingUser = async (firebaseUser) => {
     try {
-      console.log(`Checking if user ${firebaseUser.email} exists in Neon...`);
+      // console.log(`Checking if user ${firebaseUser.email} exists in Neon...`);
       
       const response = await fetch(`${API_BASE_URL}/users/${firebaseUser.uid}/migrate`, {
         method: 'POST',
@@ -94,7 +94,7 @@ function AuthProvider({ children }) {
       }
 
       const result = await response.json();
-      console.log(result.message);
+      // console.log(result.message);
       
       return result.user;
     } catch (error) {
@@ -116,7 +116,7 @@ function AuthProvider({ children }) {
       // Create in Neon with provided data
       const neonUser = await createUserInNeon(firebaseUser, userData);
       setNeonUser(neonUser);
-      console.log(userCredential, "for neon", neonUser, "- neon user")
+      // console.log(userCredential, "for neon", neonUser, "- neon user")
 
       return userCredential;
     } catch (error) {
@@ -165,7 +165,7 @@ function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log("Auth state changed:", firebaseUser?.email || 'logged out');
+      // console.log("Auth state changed:", firebaseUser?.email || 'logged out');
       
       if (firebaseUser) {
         try {
@@ -174,7 +174,7 @@ function AuthProvider({ children }) {
           
           // If user doesn't exist in Neon, migrate them
           if (!userData) {
-            console.log('User not found in Neon, migrating...');
+            // console.log('User not found in Neon, migrating...');
             userData = await migrateExistingUser(firebaseUser);
           } else {
             
