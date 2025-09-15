@@ -31,7 +31,7 @@ const ChatWindow = () => {
   
   const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const BASE_URL = import.meta.env.VITE_PUBLIC_URL ;
+  const BASE_URL = import.meta.env.BACK_URL ;
   const currentUser = auth.currentUser;
 
   useEffect(() => {
