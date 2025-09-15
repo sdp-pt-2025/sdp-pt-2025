@@ -57,7 +57,7 @@ const ChatPage = () => {
       <Sidebar />
       
       <div className="flex-1 flex">
-        {/* Chat List - Always visible on larger screens, conditional on mobile */}
+        
         <div className={`w-80 bg-white border-r border-gray-200 ${
           selectedChatId ? 'hidden lg:block' : 'block'
         }`}>
