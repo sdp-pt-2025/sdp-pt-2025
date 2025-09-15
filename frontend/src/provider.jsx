@@ -1,11 +1,10 @@
 // frontend/src/context/AuthProvider.jsx
-import { auth } from "./firebase/init";
+import { auth } from "./firebase/init"; 
 import { AuthContext } from "./context/AuthContext";
 import { onAuthStateChanged, createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
-
-const API_BASE_URL = import.meta.env.VITE_API_URL ;
+const API_BASE_URL = import.meta.env.VITE_PUBLIC_URL;
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -31,7 +30,7 @@ function AuthProvider({ children }) {
         ...additionalData 
       };
 
-      const response = await fetch(`${API_BASE_URL}/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,59 +51,34 @@ function AuthProvider({ children }) {
     }
   };
 
-  // Function to get user from Neon
+  // Function to get user from Neon 
   const getNeonUser = async (uid) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/users/${uid}`);
+      console.log(`🔍 Checking if user ${uid} exists in Neon database...`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/users/${uid}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       
       if (!response.ok) {
         if (response.status === 404) {
+          console.log(`❌ User ${uid} not found in Neon database`);
           return null; // User doesn't exist in Neon
         }
-        throw new Error('Failed to fetch user from database');
+        throw new Error(`HTTP ${response.status}: Failed to fetch user from database`);
       }
 
-      return await response.json();
+      const userData = await response.json();
+      console.log(`✅ User ${uid} found in Neon database`);
+      return userData;
     } catch (error) {
       console.error('Error fetching user from Neon:', error);
       return null;
     }
   };
-
-  // Function to migrate existing user to Neon (gradual migration)
-  const migrateExistingUser = async (firebaseUser) => {
-    try {
-      // console.log(`Checking if user ${firebaseUser.email} exists in Neon...`);
-      
-      const response = await fetch(`${API_BASE_URL}/users/${firebaseUser.uid}/migrate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Migration failed');
-      }
-
-      const result = await response.json();
-      // console.log(result.message);
-      
-      return result.user;
-    } catch (error) {
-      console.error('Error during user migration:', error);
-     
-      return null;
-    }
-  };
-
-  //the code below come from firebase docs.
 
   // Enhanced signup function
   const signUp = async (email, password, userData = {}) => {
@@ -116,7 +90,6 @@ function AuthProvider({ children }) {
       // Create in Neon with provided data
       const neonUser = await createUserInNeon(firebaseUser, userData);
       setNeonUser(neonUser);
-      // console.log(userCredential, "for neon", neonUser, "- neon user")
 
       return userCredential;
     } catch (error) {
@@ -128,7 +101,7 @@ function AuthProvider({ children }) {
   // Function to update user profile
   const updateUserProfile = async (uid, updateData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/users/${uid}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${uid}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -151,6 +124,24 @@ function AuthProvider({ children }) {
     }
   };
 
+  // Function to update last login time
+  const updateLastLogin = async (uid) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/users/${uid}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lastLoginAt: new Date().toISOString(),
+        }),
+      });
+      console.log(`✅ Updated last login for user ${uid}`);
+    } catch (error) {
+      console.error('Failed to update login time:', error);
+    }
+  };
+
   // Function to check if user needs profile completion
   const checkUserProfileComplete = (userData) => {
     if (!userData) return false;
@@ -159,39 +150,43 @@ function AuthProvider({ children }) {
       userData.faculty === 'Unknown' || 
       userData.studentId.startsWith('user_') ||
       userData.studentId.startsWith('migrated_') ||
-      !userData.modules.length
+      !userData.modules || 
+      userData.modules.length === 0
     );
   };
 
+  // Enhanced auth state change handler
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      // console.log("Auth state changed:", firebaseUser?.email || 'logged out');
+      console.log("🔄 Auth state changed:", firebaseUser?.email || 'logged out');
       
       if (firebaseUser) {
         try {
-          // First, try to get existing user from Neon
+          // Step 1: Check if user exists in Neon
           let userData = await getNeonUser(firebaseUser.uid);
           
-          // If user doesn't exist in Neon, migrate them
-          if (!userData) {
-            // console.log('User not found in Neon, migrating...');
-            userData = await migrateExistingUser(firebaseUser);
-          } else {
+         
+          
             
-            await fetch(`${API_BASE_URL}/users/${firebaseUser.uid}`, {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                lastLoginAt: new Date().toISOString(),
-              }),
-            }).catch(err => console.error('Failed to update login time:', err));
+            // If migration also fails, create a basic user record
+            if (!userData) {
+              console.log('⚠️ Migration failed, creating new user record...');
+              userData = await createUserInNeon(firebaseUser, {
+                university: 'University of The Witwatersrand',
+                faculty: 'Unknown',
+                yearOfStudy: 1,
+                modules: []
+              });
+            }
+           else {
+            // Step 3: User exists, update their last login time
+            console.log('🔄 Updating last login time...');
+            await updateLastLogin(firebaseUser.uid);
           }
 
           setNeonUser(userData);
           
-          // Add profile completion status to user object
+          // Step 4: Check if profile is complete and set user state
           const isProfileComplete = checkUserProfileComplete(userData);
           setUser({
             ...firebaseUser,
@@ -199,17 +194,23 @@ function AuthProvider({ children }) {
             neonData: userData
           });
           
+          console.log(`✅ User ${firebaseUser.email} authenticated successfully`);
+          console.log(`📋 Profile complete: ${isProfileComplete}`);
+          
         } catch (error) {
-          console.error('Error during auth state change:', error);
-          // Still set the Firebase user even if Neon operations fail
+          console.error('❌ Error during auth state change:', error);
+          
           setUser({
             ...firebaseUser,
             needsProfileCompletion: true,
-            neonData: null
+            neonData: null,
+            error: error.message
           });
           setNeonUser(null);
         }
       } else {
+        // User logged out
+        console.log('👋 User logged out');
         setUser(null);
         setNeonUser(null);
       }
@@ -228,7 +229,8 @@ function AuthProvider({ children }) {
     createUserInNeon,
     updateUserProfile,
     checkUserProfileComplete,
-    getNeonUser
+    getNeonUser,
+    updateLastLogin
   };
 
   return (

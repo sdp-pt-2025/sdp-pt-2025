@@ -66,8 +66,8 @@ async function migrateFirebaseUsersToNeon() {
                         university: "University of The Witwatersrand",
                         studentId: `migrated_${firebaseUser.uid.substring(0, 8)}`,
                         yearOfStudy: 1,
-                        faculty: "Unknown",
-                        modules: [],
+                        faculty: "Science",
+                        modules: ["COMS3012, COMS3011"],
                         fcmToken: null,
                         isActive: !firebaseUser.disabled,
                         lastLoginAt: firebaseUser.metadata.lastSignInTime
