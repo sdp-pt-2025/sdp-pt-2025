@@ -301,7 +301,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col ">
         {/* Header */}
-        <div className="bg-white sticky border border-gray-200 p-1 flex items-center justify-between rounded-2xl shadow-md shadow-gray-100 mb-1">
+        <div className="bg-white  border border-gray-200 p-1 flex items-center justify-between rounded-2xl shadow-md shadow-gray-100 mb-1 fixed top-2 right-2 max-w-4xl mx-auto left-60">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
@@ -371,7 +371,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
         </div>
 
         {/* Message Input */}
-        <div className="bg-white border-none border-gray-200 p-4 rounded-3xl shadow-sm shadow-gray-400">
+        <div className="bg-white border-none border-gray-200 p-4 rounded-3xl shadow-sm shadow-gray-400 fixed bottom-2 right-2 max-w-4xl mx-auto left-60">
           {selectedFile && (
             <div className="mb-3 p-3 bg-blue-50 rounded-lg flex items-center justify-between">
               <div className="flex items-center gap-2">
