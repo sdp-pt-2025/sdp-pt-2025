@@ -397,15 +397,28 @@ export default function Partners() {
     }
   };
 
-  const handleRemovePartner = async (friendshipId) => {
+  const handleRemovePartner = async (friendshipId, partnerUserId) => {
     try {
-      toast.loading('Removing partner...', { duration: 2000 });
+      const loadingToast = toast.loading('Removing partner...', { duration: 2000 });
       
-      const response = await fetch(`${BASE_URL}/api/find-friends/${friendshipId}`, {
+      const response = await fetch(`${BASE_URL}/api/find-friends/${friendshipId}/remove`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: currentUser.uid,
+          partnerId: partnerUserId
+        }),
       });
       
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned non-JSON response");
+      }
+      
       const result = await response.json();
+      toast.dismiss(loadingToast);
       
       if (result.success) {
         toast.success('Partner removed successfully!');
@@ -416,9 +429,10 @@ export default function Partners() {
       }
     } catch (error) {
       console.error('Error removing partner:', error);
-      toast.error('Failed to remove partner');
+      toast.error('Failed to remove partner. Please try again.');
     }
   };
+  
 
   const handleView = (partner) => {
     setSelectedPartner(partner);
@@ -670,7 +684,7 @@ export default function Partners() {
                         View
                       </button>
                       <button
-                        onClick={() => handleRemovePartner(partner.friendshipId)}
+                        onClick={() => handleRemovePartner(partner.friendshipId, partner.uid)}
                         className="bg-red-600! text-white px-3 sm:px-4 py-2 rounded text-xs sm:text-sm font-medium hover:bg-red-700! transition-colors"
                       >
                         Remove

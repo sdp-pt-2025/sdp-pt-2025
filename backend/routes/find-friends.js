@@ -658,15 +658,15 @@ router.put("/request/:friendshipId/respond", async (req, res) => {
  * @desc    Remove a friend
  * @access  Public (no auth)
  */
-router.delete("/:friendshipId", async (req, res) => {
+router.delete("/:friendshipId/remove", async (req, res) => {
     try {
-        const userId = req.user?.uid || req.body.userId || req.query.userId;
+        const { userId, partnerId } = req.body;
         const { friendshipId } = req.params;
 
-        if (!userId) {
+        if (!userId || !partnerId) {
             return res.status(400).json({
                 success: false,
-                error: "Missing userId"
+                error: "Missing userId or partnerId"
             });
         }
 
@@ -675,8 +675,8 @@ router.delete("/:friendshipId", async (req, res) => {
             where: {
                 id: friendshipId,
                 OR: [
-                    { requesterId: userId },
-                    { receiverId: userId }
+                    { requesterId: userId, receiverId: partnerId },
+                    { requesterId: partnerId, receiverId: userId }
                 ]
             }
         });
@@ -684,7 +684,7 @@ router.delete("/:friendshipId", async (req, res) => {
         if (!friendship) {
             return res.status(404).json({
                 success: false,
-                error: "Friendship not found"
+                error: "Friendship not found or you don't have permission to remove it"
             });
         }
 
@@ -695,14 +695,14 @@ router.delete("/:friendshipId", async (req, res) => {
 
         res.json({
             success: true,
-            message: "Friend removed successfully"
+            message: "Partner removed successfully"
         });
 
     } catch (error) {
-        console.error("Error removing friend:", error);
+        console.error("Error removing partner:", error);
         res.status(500).json({
             success: false,
-            error: "Failed to remove friend",
+            error: "Failed to remove partner",
             message: error.message
         });
     }
