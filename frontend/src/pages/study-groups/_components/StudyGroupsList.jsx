@@ -13,7 +13,8 @@ import {
   MessageCircle,
   CheckCircle,
   Clock,
-  Settings
+  Settings,
+  User
 } from "lucide-react";
 
 const StudyGroupsList = ({
@@ -207,6 +208,8 @@ const StudyGroupsList = ({
                       <Users className="w-4 h-4" />
                       <span>{group.memberCount}/{group.maxMembers} members</span>
                     </div>
+
+                    
                     
                     {group.userStatus === "creator" && group.pendingRequestsCount > 0 && (
                       <div className="flex items-center gap-1 text-sm text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
@@ -226,6 +229,11 @@ const StudyGroupsList = ({
                       </span>
                     </div>
                   )}
+
+<div className="flex items-center gap-1 text-sm font-bold text-gray-600 mb-4">
+                      <User className="w-4 h-4"/>
+                      <span className="text-blue-500!"> created by {group.createdByName}</span>
+                    </div>
 
                   {/* Schedule */}
                   {group.schedule && (
