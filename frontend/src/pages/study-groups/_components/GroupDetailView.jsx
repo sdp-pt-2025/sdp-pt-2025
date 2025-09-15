@@ -29,7 +29,7 @@ const GroupDetailView = ({
   // console.log(group)
   const [joinRequests, setJoinRequests] = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
-  console.log(group)
+  // console.log(group)
   
 
   const isCreator = group.createdBy === currentUserId;
@@ -43,7 +43,7 @@ const GroupDetailView = ({
   }, [isCreator]);
 
   const fetchJoinRequests = async () => {
-    console.log(group)
+    // console.log(group)
     try {
       setLoadingRequests(true);
       const response = await fetch(

@@ -12,7 +12,7 @@ import {
 import toast from "react-hot-toast";
 
 const CreateGroupForm = ({ onBack, currentUser, baseUrl, onGroupCreated }) => {
-    console.log(currentUser, "current user");
+    // console.log(currentUser, "current user");
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({

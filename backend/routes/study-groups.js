@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
                         modules: [module]
                     }
                 });
-                console.log("Created temporary user:", newUser);
+                // console.log("Created temporary user:", newUser);
             } catch (userCreationError) {
                 if (userCreationError.code !== "P2002") { 
                     return res.status(400).json({

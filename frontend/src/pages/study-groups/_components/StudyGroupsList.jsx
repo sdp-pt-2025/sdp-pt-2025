@@ -163,6 +163,7 @@ const StudyGroupsList = ({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGroups.map((group) => {
+            // console.log(group)
             const buttonConfig = getButtonConfig(group);
             
             return (
@@ -219,7 +220,9 @@ const StudyGroupsList = ({
                     <div className="flex items-center gap-1 text-sm text-gray-600 mb-4">
                       <MapPin className="w-4 h-4" />
                       <span className="truncate">
-                        {group.location.type === 'online' ? 'Online' : group.location.details}
+                        {group.location.type ? group.location.type : ""}
+                        { " "}
+                        {group.location.details ? group.location.details : group.location}
                       </span>
                     </div>
                   )}
