@@ -106,11 +106,10 @@ model ChatMessage {
   readAt      DateTime?
   edited      Boolean   @default(false)
   editedAt    DateTime?
-  reactions   Json? // Store reactions as JSON object
+  reactions   Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  // Relationships
   chat    Chat          @relation(fields: [chatId], references: [id], onDelete: Cascade)
   sender  User          @relation(fields: [senderId], references: [uid], onDelete: Cascade)
   replyTo ChatMessage?  @relation("MessageReply", fields: [replyToId], references: [id])
@@ -119,7 +118,6 @@ model ChatMessage {
   @@map("chat_messages")
 }
 
-// Study groups
 model StudyGroup {
   id             String   @id @default(cuid())
   name           String
@@ -137,11 +135,9 @@ model StudyGroup {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  // Location and schedule as JSON
   location Json?
   schedule Json?
 
-  // Relationships
   joinRequests GroupJoinRequest[]
   creator      User               @relation("GroupCreator", fields: [createdBy], references: [uid])
   members      GroupMember[]
@@ -150,7 +146,6 @@ model StudyGroup {
   @@map("study_groups")
 }
 
-// Group membership junction table
 model GroupMember {
   id      String @id @default(cuid())
   userId  String
@@ -175,7 +170,7 @@ model GroupMessage {
   replyTo     String?
   edited      Boolean   @default(false)
   editedAt    DateTime?
-  reactions   Json? // Store reactions as JSON object
+  reactions   Json?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -192,7 +187,7 @@ model StudySession {
   groupId     String?
   module      String
   topic       String
-  sessionType String // individual, group
+  sessionType String
   duration    Int
   startTime   DateTime
   endTime     DateTime
@@ -202,8 +197,8 @@ model StudySession {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  location   Json? // type, details
-  activities Json? // Array of activities
+  location   Json?
+  activities Json?
 
   // Relationships
   user         User                      @relation(fields: [userId], references: [uid], onDelete: Cascade)
@@ -231,7 +226,7 @@ model ProgressTracking {
   userId               String
   module               String
   topic                String
-  status               String // not_started, in_progress, completed
+  status               String
   completionPercentage Int       @default(0)
   studyHours           Float     @default(0)
   lastStudied          DateTime?
@@ -241,8 +236,8 @@ model ProgressTracking {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
-  resources  Json? // Array of resource objects
-  milestones Json? // Array of milestone objects
+  resources  Json?
+  milestones Json?
 
   user User @relation(fields: [userId], references: [uid], onDelete: Cascade)
 
@@ -259,7 +254,7 @@ model Notification {
   title        String
   body         String
   type         String // session_reminder, group_invite, friend_request, friend_request_response, etc.
-  data         Json? // Additional notification data
+  data         Json?
   read         Boolean   @default(false)
   readAt       DateTime?
   sentAt       DateTime  @default(now())
@@ -303,7 +298,7 @@ model GroupJoinRequest {
   requestedAt DateTime  @default(now())
   respondedAt DateTime?
   respondedBy String?
-  message     String? // Optional message from requester
+  message     String?
 
   user      User       @relation("UserJoinRequests", fields: [userId], references: [uid], onDelete: Cascade)
   group     StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
@@ -318,10 +313,10 @@ model Bug {
   id               String    @id @default(cuid())
   title            String
   description      String
-  severity         String // low, medium, high, critical
-  category         String // ui, api, performance, etc.
-  status           String    @default("open") // open, in_progress, resolved, closed
-  priority         Int       @default(3) // 1-10 scale
+  severity         String
+  category         String
+  status           String    @default("open")
+  priority         Int       @default(3)
   reporterId       String
   reporterName     String
   reporterEmail    String
@@ -333,8 +328,8 @@ model Bug {
   attachments      String[] // Array of attachment URLs
   tags             String[]
   votes            Int       @default(0)
-  voters           String[] // Array of user IDs who voted
-  watchers         String[] // Array of user IDs watching this bug
+  voters           String[]
+  watchers         String[]
   resolvedAt       DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
