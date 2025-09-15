@@ -301,7 +301,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col ">
         {/* Header */}
-        <div className="bg-white  border border-gray-200 p-1 flex items-center justify-between rounded-2xl shadow-md shadow-gray-100 mb-1 fixed top-2 right-2 max-w-4xl mx-auto left-60">
+        <div className="bg-white  border border-gray-200 p-1 flex items-center justify-between rounded-2xl shadow-md shadow-gray-100 mb-1 fixed top-2 right-2 max-w-4xl mx-auto left-2 md:left-60">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
@@ -358,7 +358,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
           ) : (
             Object.entries(groupedMessages).map(([date, msgs]) => (
               <div key={date}>
-                <div className="flex justify-center mb-4">
+                <div className="flex justify-center mb-4 mt-20">
                   <div className="bg-white px-3 py-1 rounded-full text-xs text-gray-500 shadow-sm">
                     {date}
                   </div>
@@ -371,7 +371,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
         </div>
 
         {/* Message Input */}
-        <div className="bg-white border-none border-gray-200 p-4 rounded-3xl shadow-sm shadow-gray-400 fixed bottom-2 right-2 max-w-4xl mx-auto left-60">
+        <div className="bg-white border-none border-gray-200 p-4 rounded-3xl shadow-sm shadow-gray-400 fixed bottom-2 right-2 max-w-4xl mx-auto left-2 md:left-60">
           {selectedFile && (
             <div className="mb-3 p-3 bg-blue-50 rounded-lg flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -511,7 +511,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
 
       {/* Members Sidebar */}
       {showMembers && (
-        <div className="w-70 bg-blue-900 rounded-4xl ml-2 p-6 overflow-y-auto">
+        <div className="w-70 bg-blue-900 rounded-4xl ml-2 p-6 overflow-y-auto z-800 bg-blur-md">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-200">
               Members ({group?.memberCount || 0})
