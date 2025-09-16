@@ -13,12 +13,13 @@ import Progress from "./pages/progress/page.jsx";
 import Chat from "./pages/chat/components/ChatList.jsx"
 import Profile from "./pages/profile/page.jsx"
 import ChatWindow from "./pages/chat/page.jsx";
-
+import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "react-hot-toast";
 
 function App() {
     return (
         <BrowserRouter>
+        <Analytics/>
             <Provider>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
