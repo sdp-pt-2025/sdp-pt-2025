@@ -436,7 +436,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
         </div>
       </div>
 
-      {/* Group Info Sidebar */}
+      {/* Group Info Sidebar  nje*/}
       {showGroupInfo && (
         <div className="w-70 bg-white  p-6 overflow-y-auto">
           <div className="flex items-center justify-between mb-6">
