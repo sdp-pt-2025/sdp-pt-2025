@@ -111,7 +111,7 @@ app.post("/modules", async (req, res) => {
 });
 
 // Add user preference
-app.post("/userPreperence", async (req, res) => {
+app.post("/userPreferance", async (req, res) => {
     const { s: stdnum, sg: Study_goal, b: Bio, l: Learning_style, sl: Study_location, m: Motivator } = req.query;
 
     try {
@@ -128,7 +128,7 @@ app.post("/userPreperence", async (req, res) => {
 
 // Get user info
 app.get("/getuserinfo", async (req, res) => {
-    const stdnum = req.query.s;
+    const stdnum = req.params.s;
     try {
         const result = await pool.query(`SELECT * FROM UserInfo WHERE student_num=$1`, [stdnum]);
         res.json(result.rows);
@@ -161,7 +161,7 @@ app.get("/getuserpreferance", async (req, res) => {
 
 // Get profile picture
 app.get("/getpfp", async (req, res) => {
-    const stdnum = req.params.s;
+    const stdnum = req.query.s;
     try {
         const result = await pool.query(`SELECT * FROM Pfp WHERE student_num=$1`, [stdnum]);
         res.json(result.rows);
@@ -170,17 +170,79 @@ app.get("/getpfp", async (req, res) => {
     }
 });
 
-app.delete("/deletemodule",async(req,res)=>{
-    const std_num=req.query.s;
-    const module=req.query.m;
 
-    try{
-        await pool.query(`DELETE FROM UserModules WHERE student_num=$1 AND module=$2`,[std_num,module]);
-        res.send("Yayyyy");
-        
-    }catch(error){
-        res.send(error)
+app.get("/recommended", async (req, res) => {
+  try {
+    const stdnum = req.query.s?.trim();
+
+    const recommended = [];
+
+   
+    const res1 = await pool.query(
+      `SELECT pfp FROM pfp WHERE student_num = $1`,
+      [stdnum]
+    );
+        console.log("res1:", res1.rows); // modules for this student
+
+console.log(res1.rows.length);
+    for (const a of res1.rows) {
+      const module = a.pfp; // now this will actually have the module name
+
+      // 2️⃣ Get all students in the same module
+      const res2 = await pool.query(
+        `SELECT student_num FROM pfp WHERE pfp = $1`,
+        [module]
+      );
+      console.log("res2:", res2.rows); // students in same module
+      console.log("ohhh");
+
+
+      for (const b of res2.rows) {
+        const student = b.student_num;
+
+        // 3️⃣ Get their usernames
+        const res3 = await pool.query(
+          `SELECT username, student_num FROM userinfo WHERE student_num = $1`,
+          [student]
+        );
+        console.log("res3:", res3.rows); // usernames
+
+
+        // Add each user to the array
+        recommended.push(...res3.rows);
+      }
     }
+
+
+    res.json(recommended);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+
+});
+
+app.get("/search",async(req,res)=>{
+    const module= req.query.m?.trim();
+    const result= await pool.query(`SELECT student_num FROM Pfp WHERE pfp=$1`,[module]);
+    let array=[];
+
+    for(const row of result.rows){
+        array.push(row.student_num);
+    }
+    //get the names of the student num
+    const ret=[]
+    for(const std of array){
+        const q= await pool.query(`SELECT username, student_num FROM userinfo WHERE student_num=$1`,[std]);
+        for(const rs of q.rows){
+            ret.push(rs);
+
+        }
+
+    }
+    res.json(ret);
+
+
 });
 
 app.listen(3000, () => {
