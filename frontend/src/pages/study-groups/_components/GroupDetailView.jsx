@@ -16,7 +16,7 @@ import {
   Settings,
   Bell
 } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 const GroupDetailView = ({
   group,

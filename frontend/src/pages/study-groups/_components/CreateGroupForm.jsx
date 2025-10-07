@@ -12,7 +12,7 @@ import {
   Clock,
   MapPin
 } from "lucide-react";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 
 const CreateGroupForm = ({ onBack, currentUser, baseUrl, onGroupCreated }) => {
   const [step, setStep] = useState(1);

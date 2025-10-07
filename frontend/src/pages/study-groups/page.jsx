@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import Sidebar from "../../components/Sidebar/sidebar";
 import { auth } from "../../firebase/init";
 import StudyGroupsList from "./_components/StudyGroupsList";

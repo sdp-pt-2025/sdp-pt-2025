@@ -17,11 +17,10 @@ import {
   Check,
   XCircle
 } from "lucide-react";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { Textarea } from "../../../components/ui/textarea"
 
 const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
-    //onShowNotifications
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -34,16 +33,13 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Check if current user is the creator/admin
   const isAdmin = group?.createdBy === currentUser?.uid;
-//   const isCreator = isAdmin;
 
   useEffect(() => {
     fetchMessages();
     if (isAdmin) {
       fetchJoinRequests();
     }
-    // Set up polling for new messages
     const interval = setInterval(() => {
       fetchMessages();
       if (isAdmin) {
@@ -110,7 +106,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
           },
           body: JSON.stringify({
             requestId,
-            action, // 'approve' or 'reject'
+            action,
             adminId: currentUser.uid,
           }),
         }
@@ -119,9 +115,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
       const result = await response.json();
 
       if (result.success) {
-        // Refresh join requests
         fetchJoinRequests();
-        // Show success message
         toast.success(`Request ${action}d successfully!`, { duration: 5000});
       } else {
         toast.error(result.error || `Failed to ${action} request`);
@@ -223,59 +217,61 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
     return (
       <div
         key={message.id}
-        className={`flex items-start gap-3 mb-4 max-w-3xl  mx-auto ${isOwn ? 'flex-row-reverse' : ''}`}
+        className={`flex items-start gap-3 mb-6 max-w-3xl mx-auto group ${isOwn ? 'flex-row-reverse' : ''}`}
       >
         {!isOwn && (
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-            {message.sender?.photoURL ? (
-              <img 
-                src={message.sender.photoURL} 
-                alt={message.sender.displayName} 
-                className="w-full h-full rounded-full object-cover" 
-              />
-            ) : (
-              <span className="text-blue-600 font-semibold text-sm">
-                {(message.senderName || message.sender?.displayName || 'U').charAt(0).toUpperCase()}
-              </span>
-            )}
+          <div className="relative">
+            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30 ring-2 ring-white">
+              {message.sender?.photoURL ? (
+                <img 
+                  src={message.sender.photoURL} 
+                  alt={message.sender.displayName} 
+                  className="w-full h-full rounded-2xl object-cover" 
+                />
+              ) : (
+                <span className="text-white font-bold text-sm">
+                  {(message.senderName || message.sender?.displayName || 'U').charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
           </div>
         )}
         
         <div className={`max-w-xs lg:max-w-md ${isOwn ? 'items-end' : 'items-start'}`}>
           {!isOwn && (
-            <p className="text-xs text-gray-500 mb-1">
+            <p className="text-xs font-medium text-gray-600 mb-2 px-1">
               {message.senderName || message.sender?.displayName || 'Unknown User'}
             </p>
           )}
           
           <div
-            className={`rounded-2xl px-4 py-2 ${
+            className={`rounded-3xl px-5 py-3.5 shadow-lg transform transition-all duration-200 hover:scale-[1.02] ${
               isOwn
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-900'
+                ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-blue-500/30'
+                : 'bg-white text-gray-800 shadow-gray-200/50 border border-gray-100'
             }`}
           >
             {message.messageType === 'file' && message.attachments?.length > 0 && (
-              <div className="mb-2">
+              <div className="mb-3">
                 {message.attachments.map((attachment, index) => (
                   <div
                     key={index}
-                    className={`flex items-center gap-2 p-2 rounded-lg ${
-                      isOwn ? 'bg-blue-700' : 'bg-gray-200'
+                    className={`flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 hover:scale-[1.02] ${
+                      isOwn ? 'bg-blue-700/50' : 'bg-gray-100'
                     }`}
                   >
-                    <File className="w-4 h-4" />
-                    <span className="text-sm truncate">{attachment}</span>
-                    <Download className="w-4 h-4 cursor-pointer" />
+                    <File className="w-5 h-5" />
+                    <span className="text-sm truncate flex-1">{attachment}</span>
+                    <Download className="w-5 h-5 cursor-pointer hover:scale-110 transition-transform" />
                   </div>
                 ))}
               </div>
             )}
             
-            <p className="text-sm whitespace-pre-wrap">{message.message}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.message}</p>
           </div>
           
-          <p className={`text-xs text-gray-400 mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
+          <p className={`text-xs text-gray-400 mt-2 px-1 ${isOwn ? 'text-right' : 'text-left'}`}>
             {formatTime(message.createdAt)}
           </p>
         </div>
@@ -287,79 +283,125 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50">
         <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto"></div>
-          <p className="text-gray-500 mt-4">Loading chat...</p>
+          <div className="relative">
+            <div className="animate-spin w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full mx-auto"></div>
+            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-pink-400 rounded-full animate-spin mx-auto" style={{animationDirection: 'reverse', animationDuration: '1.5s'}}></div>
+          </div>
+          <p className="text-gray-600 mt-6 font-medium">Loading your conversation...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-white ">
+    <div className="flex h-screen bg-gradient-to-br from-violet-50/30 via-purple-50/30 to-fuchsia-50/30">
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col ">
-        {/* Header */}
-        <div className="bg-white  border border-gray-200 p-1 flex items-center justify-between rounded-2xl shadow-md shadow-gray-100 mb-1 fixed top-2 right-2 max-w-4xl mx-auto left-2 md:left-60">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onBack}
-              className="p-2 hover:bg-gray-100 rounded-lg transition"
-            >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <div className="py-3">
-              <h2 className="font-semibold text-gray-500">{group?.name}</h2>
-              <p className="text-sm text-gray-500">
-                {group?.memberCount || 0} members • {group?.module}
-              </p>
+      <div className="flex-1 flex flex-col">
+       
+        <div className="overflow-hidden rounded-3xl mt-2 mb-1 fixed top-0 right-2 max-w-4xl left-2 md:left-60 z-40 mx-auto">
+         
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-blue-900 to-blue-800 opacity-90"></div>
+          
+         
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-0 left-0 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+            <div className="absolute top-0 right-0 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+          </div>
+
+         
+          <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl">
+            <div className="px-5 py-3.5 flex items-center justify-between">
+              {/* Left Section */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={onBack}
+                  className="p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-110"
+                >
+                  <ChevronLeft className="w-5 h-5 text-white" />
+                </button>
+                
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
+                      <span className="text-lg font-bold text-white">
+                        {group?.name?.charAt(0) || 'G'}
+                      </span>
+                    </div>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-2xl blur-md opacity-50"></div>
+                  </div>
+                  
+                  <div>
+                    <h2 className="font-bold text-white text-base tracking-tight drop-shadow-lg truncate block max-w-[150px] md:max-w-full">
+                      {group?.name}
+                    </h2>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full border border-white/30">
+                        <Users className="w-3 h-3 text-white/90" />
+                        <span className="text-xs font-medium text-white/90">
+                          {group?.memberCount || 0}
+                        </span>
+                      </div>
+                      <span className="w-1 h-1 bg-white/50 rounded-full"></span>
+                      <span className="text-xs font-medium text-white/90">
+                        {group?.module}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Right Section */}
+              <div className="flex items-center gap-2">
+                {isAdmin && joinRequests.length > 0 && (
+                  <button
+                    onClick={() => setShowJoinRequests(true)}
+                    className="relative p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-110"
+                  >
+                    <Bell className="w-5 h-5 text-white/90" />
+                    <div className="absolute -top-1 -right-1">
+                      <span className="bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white shadow-lg">
+                        {joinRequests.length}
+                      </span>
+                      <span className="absolute inset-0 bg-rose-500 rounded-full animate-ping opacity-50"></span>
+                    </div>
+                  </button>
+                )}
+                
+                <button
+                  onClick={() => setShowMembers(!showMembers)}
+                  className="p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-110"
+                >
+                  <Users className="w-5 h-5 text-white/90" />
+                </button>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {isAdmin && joinRequests.length > 0 && (
-              <button
-                onClick={() => setShowJoinRequests(true)}
-                className="relative p-2 hover:bg-gray-100 rounded-lg transition"
-              >
-                <Bell className="w-5 h-5 text-gray-600" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {joinRequests.length}
-                </span>
-              </button>
-            )}
-            {/* <button
-              onClick={() => setShowGroupInfo(!showGroupInfo)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition"
-            >
-              <Info className="w-5 h-5 text-gray-600" />
-            </button> */}
-            <button
-              onClick={() => setShowMembers(!showMembers)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition"
-            >
-              <Users className="w-5 h-5 text-gray-600" />
-            </button>
-          </div>
+
+          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 blur-2xl opacity-50"></div>
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+        <div className="flex-1 overflow-y-auto px-4 pt-20 pb-32 bg-gradient-to-b from-transparent to-white/30">
           {Object.entries(groupedMessages).length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-                  <Users className="w-8 h-8 text-gray-400" />
+                <div className="relative mx-auto w-20 h-20 mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-3xl blur-xl opacity-30 animate-pulse"></div>
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-violet-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-purple-500/40">
+                    <Users className="w-10 h-10 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No messages yet</h3>
-                <p className="text-gray-500">Start the conversation by sending the first message!</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">No messages yet</h3>
+                <p className="text-gray-600">Start the conversation by sending the first message!</p>
               </div>
             </div>
           ) : (
             Object.entries(groupedMessages).map(([date, msgs]) => (
-              <div key={date} className="my-20 ">
-                <div className="flex justify-center mb-4">
-                  <div className="bg-white px-3 py-1 rounded-full text-xs text-gray-500 shadow-sm">
+              <div key={date} className="mb-8">
+                <div className="flex justify-center mb-6">
+                  <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl text-xs font-semibold text-gray-700 shadow-lg shadow-gray-200/50 border border-gray-100">
                     {date}
                   </div>
                 </div>
@@ -370,269 +412,226 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Message Input */}
-        <div className="bg-white border-none border-gray-200 p-4 rounded-3xl shadow-sm shadow-gray-400 fixed bottom-2 right-2 max-w-4xl mx-auto left-2 md:left-60">
-          {selectedFile && (
-            <div className="mb-3 p-3 bg-blue-50 rounded-lg flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <File className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-blue-800">{selectedFile.name}</span>
-              </div>
-              <button
-                onClick={() => setSelectedFile(null)}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-          
-          <div className="flex items-center gap-3 justify-center ">
-            <div className="flex-1 relative items-center justify-center">
-              <Textarea 
-              placeholder="Type your message here."
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              
-              
-              className="w-full px-4 py-3 pr-12 max-h-[120px]  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 resize-none bg-gray-200"
-
-               />
-              {/* <textarea
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                rows={1}
-                className="w-full px-4 py-3 pr-12  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 resize-none bg-gray-200"
-                style={{ minHeight: '48px', maxHeight: '120px' }}
-              /> */}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute right-3 bottom-3 p-1 hover:bg-gray-100 rounded-lg transition"
-              >
-                <Paperclip className="w-4 h-4 text-gray-400!" />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-            </div>
-            <button
-              onClick={sendMessage}
-              disabled={(!newMessage.trim() && !selectedFile) || sending}
-              className="p-3 bg-blue-600! text-white rounded-xl hover:bg-blue-700! disabled:bg-gray-300 disabled:cursor-not-allowed transition flex-shrink-0"
-            >
-              {sending ? (
-                <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-              ) : (
-                <Send className="w-4 h-4" />
+        {/* Premium Message Input */}
+        <div className="fixed bottom-2 right-2 max-w-4xl mx-auto left-2 md:left-60 z-40">
+          <div className="relative overflow-hidden rounded-3xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-600/90 via-purple-600/90 to-fuchsia-600/90"></div>
+            <div className="relative backdrop-blur-xl bg-white/95 border border-white/20 shadow-2xl p-4">
+              {selectedFile && (
+                <div className="mb-3 p-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-2xl flex items-center justify-between border border-purple-200 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-purple-100 rounded-xl">
+                      <File className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium text-purple-900">{selectedFile.name}</span>
+                  </div>
+                  <button
+                    onClick={() => setSelectedFile(null)}
+                    className="p-1.5 hover:bg-purple-100 rounded-lg transition-colors"
+                  >
+                    <X className="w-4 h-4 text-purple-600" />
+                  </button>
+                </div>
               )}
-            </button>
+              
+              <div className="flex items-end gap-3">
+                <div className="flex-1 relative">
+                  <Textarea 
+                    placeholder="Type your message..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="w-full px-5 py-3.5 pr-12 max-h-[120px] rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none bg-white shadow-inner border-gray-200 text-gray-800 placeholder-gray-400"
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute right-3 bottom-3.5 p-2 hover:bg-purple-50 rounded-xl transition-all duration-200 hover:scale-110"
+                  >
+                    <Paperclip className="w-5 h-5 text-gray-400" />
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </div>
+                <button
+                  onClick={sendMessage}
+                  disabled={(!newMessage.trim() && !selectedFile) || sending}
+                  className="p-4 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0 shadow-lg shadow-blue-500/40 hover:shadow-blue-500/60 hover:scale-105 disabled:shadow-none disabled:scale-100"
+                >
+                  {sending ? (
+                    <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Group Info Sidebar  nje*/}
-      {showGroupInfo && (
-        <div className="w-70 bg-white  p-6 overflow-y-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Group Info</h2>
-            <button
-              onClick={() => setShowGroupInfo(false)}
-              className="p-1 hover:bg-gray-100 rounded-lg transition"
-            >
-              <X className="w-4 h-4 text-gray-500" />
-            </button>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">{group?.name}</h3>
-              <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
-                <Users className="w-4 h-4" />
-                <span>{group?.memberCount}/{group?.maxMembers} members</span>
-              </div>
-              {group?.description && (
-                <p className="text-gray-700 text-sm">{group?.description}</p>
-              )}
-            </div>
-
-            {group?.tags && group.tags.length > 0 && (
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Tags</h4>
-                <div className="flex flex-wrap gap-2">
-                  {group.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div>
-              <h4 className="font-medium text-gray-900 mb-2">Module</h4>
-              <p className="text-gray-700 text-sm">{group?.module}</p>
-            </div>
-
-            <div>
-              <h4 className="font-medium text-gray-900 mb-2">Privacy</h4>
-              <div className="flex items-center gap-2">
-                {group?.isPublic ? (
-                  <>
-                    <Globe className="w-4 h-4 text-green-500" />
-                    <span className="text-green-700 text-sm">Public Group</span>
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-4 h-4 text-orange-500" />
-                    <span className="text-orange-700 text-sm">Private Group</span>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-medium text-gray-900 mb-2">Created</h4>
-              <p className="text-gray-700 text-sm">
-                {new Date(group?.createdAt).toLocaleDateString()} by {group?.createdByName}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Members Sidebar */}
+      {/* Premium Members Sidebar */}
       {showMembers && (
-        <div className="w-70 bg-blue-900 rounded-4xl ml-2 p-6 overflow-y-auto z-800 bg-blur-md">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-200">
-              Members ({group?.memberCount || 0})
-            </h2>
-            <button
-              onClick={() => setShowMembers(false)}
-              className="p-1 hover:bg-gray-100 rounded-lg transition"
-            >
-              <X className="w-4 h-4 text-gray-300" />
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {group?.members?.map((member) => (
-              <div key={member.id || member.uid} className="flex items-center gap-3 p-2 hover:bg-blue-500 rounded-lg">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  {member.photoURL ? (
-                    <img 
-                      src={member.photoURL} 
-                      alt={member.displayName} 
-                      className="w-full h-full rounded-full object-cover" 
-                    />
-                  ) : (
-                    <span className="text-gray-200 font-semibold text-sm">
-                      {(member.displayName || 'U').charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-gray-200">{member.displayName}</p>
-                  {member.yearOfStudy && (
-                    <p className="text-sm text-gray-500">Year {member.yearOfStudy}</p>
-                  )}
-                </div>
-                {group?.createdBy === (member.uid || member.id) && (
-                  <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">
-                    Creator
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Join Requests Modal */}
-      {showJoinRequests && isAdmin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full m-4 max-h-96 overflow-y-auto">
+        <div className="w-80 relative overflow-hidden rounded-3xl ml-2 my-2 mr-2">
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600"></div>
+          <div className="relative h-full backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl overflow-y-auto">
             <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Join Requests ({joinRequests.length})
-                </h3>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-bold text-white drop-shadow-lg">
+                  Members ({group?.memberCount || 0})
+                </h2>
                 <button
-                  onClick={() => setShowJoinRequests(false)}
-                  className="p-1 hover:bg-gray-100 rounded-lg transition"
+                  onClick={() => setShowMembers(false)}
+                  className="p-2 hover:bg-white/20 rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/10 hover:scale-110"
                 >
-                  <X className="w-4 h-4 text-gray-500" />
+                  <X className="w-4 h-4 text-white" />
                 </button>
               </div>
 
-              {joinRequests.length === 0 ? (
-                <div className="text-center py-8">
-                  <UserPlus className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">No pending requests</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {joinRequests.map((request) => (
-                    <div key={request.id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          {request.user.photoURL ? (
+              <div className="space-y-3">
+                {group?.members?.map((member) => (
+                  <div key={member.id || member.uid} className="group/member p-3 hover:bg-white/20 rounded-2xl transition-all duration-200 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-[1.02] cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-white/30 to-white/10 rounded-2xl flex items-center justify-center shadow-lg">
+                          {member.photoURL ? (
                             <img 
-                              src={request.user.photoURL} 
-                              alt={request.user.displayName} 
-                              className="w-full h-full rounded-full object-cover" 
+                              src={member.photoURL} 
+                              alt={member.displayName} 
+                              className="w-full h-full rounded-2xl object-cover" 
                             />
                           ) : (
-                            <span className="text-blue-600 font-semibold text-sm">
-                              {request.user.displayName.charAt(0).toUpperCase()}
+                            <span className="text-white font-bold">
+                              {(member.displayName || 'U').charAt(0).toUpperCase()}
                             </span>
                           )}
                         </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">{request.user.displayName}</p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(request.requestedAt).toLocaleDateString()}
-                          </p>
-                        </div>
                       </div>
-                      
-                      {request.message && (
-                        <p className="text-sm text-gray-700 mb-3 italic">"{request.message}"</p>
+                      <div className="flex-1">
+                        <p className="font-semibold text-white">{member.displayName}</p>
+                        {member.yearOfStudy && (
+                          <p className="text-sm text-white/70">Year {member.yearOfStudy}</p>
+                        )}
+                      </div>
+                      {group?.createdBy === (member.uid || member.id) && (
+                        <span className="px-3 py-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-xs rounded-xl font-bold shadow-lg shadow-amber-500/30">
+                          Admin
+                        </span>
                       )}
-
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleJoinRequestResponse(request.id, 'approve')}
-                          className="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg font-medium hover:bg-green-700 transition flex items-center justify-center gap-2"
-                        >
-                          <Check className="w-4 h-4" />
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleJoinRequestResponse(request.id, 'reject')}
-                          className="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg font-medium hover:bg-red-700 transition flex items-center justify-center gap-2"
-                        >
-                          <XCircle className="w-4 h-4" />
-                          Reject
-                        </button>
-                      </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Premium Join Requests Modal */}
+      {showJoinRequests && isAdmin && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="relative w-full max-w-lg">
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-3xl blur-xl opacity-50"></div>
+            <div className="relative bg-white rounded-3xl shadow-2xl max-h-[32rem] overflow-hidden">
+              <div className="sticky top-0 bg-gradient-to-r from-violet-600 to-purple-600 p-6 z-10">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-white drop-shadow-lg">
+                    Join Requests ({joinRequests.length})
+                  </h3>
+                  <button
+                    onClick={() => setShowJoinRequests(false)}
+                    className="p-2 hover:bg-white/20 rounded-xl transition-all duration-200 hover:scale-110"
+                  >
+                    <X className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto max-h-96">
+                {joinRequests.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-gradient-to-br from-violet-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                      <UserPlus className="w-10 h-10 text-purple-500" />
+                    </div>
+                    <p className="text-gray-500 font-medium">No pending requests</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {joinRequests.map((request) => (
+                      <div key={request.id} className="border-2 border-gray-100 rounded-2xl p-4 hover:border-purple-200 transition-all duration-200 hover:shadow-lg bg-gradient-to-br from-white to-purple-50/30">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                            {request.user.photoURL ? (
+                              <img 
+                                src={request.user.photoURL} 
+                                alt={request.user.displayName} 
+                                className="w-full h-full rounded-2xl object-cover" 
+                              />
+                            ) : (
+                              <span className="text-white font-bold">
+                                {request.user.displayName.charAt(0).toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-bold text-gray-900">{request.user.displayName}</p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(request.requestedAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {request.message && (
+                          <p className="text-sm text-gray-700 mb-4 p-3 bg-purple-50 rounded-xl italic border-l-4 border-purple-400">
+                            "{request.message}"
+                          </p>
+                        )}
+
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => handleJoinRequestResponse(request.id, 'approve')}
+                            className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02]"
+                          >
+                            <Check className="w-5 h-5" />
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleJoinRequestResponse(request.id, 'reject')}
+                            className="flex-1 bg-gradient-to-r from-red-500 to-rose-600 text-white px-4 py-3 rounded-xl font-bold hover:from-red-600 hover:to-rose-700 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-red-500/30 hover:shadow-red-500/50 hover:scale-[1.02]"
+                          >
+                            <XCircle className="w-5 h-5" />
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes blob {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          25% { transform: translate(20px, -20px) scale(1.1); }
+          50% { transform: translate(-20px, 20px) scale(0.9); }
+          75% { transform: translate(20px, 20px) scale(1.05); }
+        }
+        
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+      `}</style>
     </div>
   );
 };

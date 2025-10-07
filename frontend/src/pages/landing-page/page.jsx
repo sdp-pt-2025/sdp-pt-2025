@@ -11,7 +11,7 @@ import { SparklesCore} from "../../components/ui/sparkles"
 import features, { Testimonials } from "../../lib/constants/features";
 import { auth } from "../../firebase/init";
 import { signInWithGoogle } from "../../firebase/auth";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { useNavigate } from "react-router-dom";
 // import { ContainerTextFlip } from "@/components/ui/container-text-flip";
 import { FlipWords } from "@/components/ui/flip-words";

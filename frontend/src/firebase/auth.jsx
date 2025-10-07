@@ -10,7 +10,7 @@ import {
 import { auth } from "./init"; 
 
 import React, { useState } from "react";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 
 const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope("profile");

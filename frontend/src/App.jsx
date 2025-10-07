@@ -1,5 +1,3 @@
-
-
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Provider from "./provider.jsx";
@@ -12,9 +10,9 @@ import Partners from "./pages/partners/page.jsx"
 import Progress from "./pages/progress/page.jsx";
 import Chat from "./pages/chat/components/ChatList.jsx"
 import Profile from "./pages/profile/page.jsx"
-import ChatWindow from "./pages/chat/page.jsx";
+import ChatPage from "./pages/chat/page.jsx"; 
 // import { Analytics } from "@vercel/analytics/next"
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
 function App() {
     return (
@@ -27,12 +25,13 @@ function App() {
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/study-groups" element={<CreateStudyGroup />} />
                     <Route path="/progress-tracker" element={<Progress />} />
-                    <Route path="/chats" element={<ChatWindow />} />
-                    <Route path="/chats/:partnerId" element={<ChatWindow />} />
                     <Route path="/profile" element={<Profile />} />
+                    
                    
+                    <Route path="/chats" element={<ChatPage />} />
+                    <Route path="/chats/:chatId" element={<ChatPage />} />
                 </Routes>
-                <Toaster position="top-right"/>
+                <Toaster/>
             </Provider>
         </BrowserRouter>
     );

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { signInWithGoogle, signOutUser } from "../../firebase/auth";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 
 // Authentication Button Component
 export function AuthButton() {
@@ -17,10 +17,7 @@ export function AuthButton() {
       const result = await signInWithGoogle();
       if (result.success) {
         // console.log("User signed in:", result.user);
-        toast.success("Successfully signed in!"), {
-          duration: 4000,
-          position: "middle-center",
-        };
+        toast("Successfully signed in!");
       } else {
         setError(result.error || null);
       }

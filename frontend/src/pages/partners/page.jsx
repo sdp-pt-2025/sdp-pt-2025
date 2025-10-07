@@ -1,7 +1,7 @@
 import Sidebar from "../../components/Sidebar/sidebar";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
 import { auth } from "../../firebase/init";
 
