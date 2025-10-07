@@ -783,7 +783,7 @@ router.post("/:id/messages", async (req, res) => {
         // Process attachments to ensure they're in the correct format
         const processedAttachments = attachments.map(attachment => {
             if (typeof attachment === 'string') {
-                // Old format - just filename
+                
                 return attachment;
             } else {
                 // New format - object with url, filename, etc.
@@ -817,7 +817,7 @@ router.post("/:id/messages", async (req, res) => {
             }
         });
 
-        // Update group last activity
+       
         await prisma.studyGroup.update({
             where: { id },
             data: {
@@ -840,13 +840,13 @@ router.post("/:id/messages", async (req, res) => {
     }
 });
 
-// Add a new route to delete files (optional)
+
 router.delete("/:id/messages/:messageId/file", async (req, res) => {
     try {
         const { id, messageId } = req.params;
         const { userId, storagePath } = req.body;
 
-        // Verify message exists and user is authorized
+        
         const message = await prisma.groupMessage.findUnique({
             where: { id: messageId }
         });
@@ -872,9 +872,7 @@ router.delete("/:id/messages/:messageId/file", async (req, res) => {
             });
         }
 
-        // Note: Firebase Storage deletion would need to be done client-side
-        // or with Firebase Admin SDK on the backend
-        // For now, just remove the attachment from the message
+        
 
         const updatedAttachments = message.attachments.filter(
             att => att.storagePath !== storagePath
