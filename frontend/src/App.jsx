@@ -10,11 +10,14 @@ import Partners from "./pages/partners/page.jsx"
 import Progress from "./pages/progress/page.jsx";
 import Chat from "./pages/chat/components/ChatList.jsx"
 import Profile from "./pages/profile/page.jsx"
-import ChatWindow from "./pages/chat/ChatWindow.jsx";
+import ChatPage from "./pages/chat/page.jsx"; 
+// import { Analytics } from "@vercel/analytics/next"
+import { Toaster } from "sonner";
 
 function App() {
     return (
         <BrowserRouter>
+        {/* <Analytics/> */}
             <Provider>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
@@ -22,11 +25,13 @@ function App() {
                     <Route path="/partners" element={<Partners />} />
                     <Route path="/study-groups" element={<CreateStudyGroup />} />
                     <Route path="/progress-tracker" element={<Progress />} />
-                    <Route path="/chat" element={<Chat />} />
-                    <Route path="/chat/:chatId" element={<ChatWindow />} />
                     <Route path="/profile" element={<Profile />} />
+                    
                    
+                    <Route path="/chats" element={<ChatPage />} />
+                    <Route path="/chats/:chatId" element={<ChatPage />} />
                 </Routes>
+                <Toaster/>
             </Provider>
         </BrowserRouter>
     );

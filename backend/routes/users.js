@@ -5,7 +5,7 @@ const router = express.Router();
 
 const prisma = new PrismaClient();
 
-// POST /api/users - Create a new user
+
 router.post("/", async (req, res) => {
     try {
         const userData = req.body;
@@ -39,8 +39,8 @@ router.post("/", async (req, res) => {
                 university: userData.university || "University of The Witwatersrand",
                 studentId: userData.studentId || `user_${userData.uid.substring(0, 8)}`,
                 yearOfStudy: userData.yearOfStudy || 1,
-                faculty: userData.faculty || "Unknown",
-                modules: userData.modules || [],
+                faculty: userData.faculty || "Science",
+                modules: userData.modules || ["COMS3011", "COMS3002", "COMS3007", "COMS3012"],
                 fcmToken: userData.fcmToken || null,
                 isActive: userData.isActive !== undefined ? userData.isActive : true,
                 lastLoginAt: userData.lastLoginAt ? new Date(userData.lastLoginAt) : new Date(),
@@ -69,7 +69,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-// GET /api/users/:uid - Get user by UID
 router.get("/:uid", async (req, res) => {
     try {
         const { uid } = req.params;
@@ -112,13 +111,13 @@ router.get("/:uid", async (req, res) => {
     }
 });
 
-// update users
+
 router.patch("/:uid", async (req, res) => {
     try {
         const { uid } = req.params;
         const updateData = req.body;
 
-        // Remove fields that shouldn't be updated directly
+        
         delete updateData.uid;
         delete updateData.id;
         delete updateData.createdAt;
@@ -263,7 +262,7 @@ router.post("/:uid/migrate", async (req, res) => {
     }
 });
 
-// DELETE /api/users/:uid - Delete user (admin only)
+
 router.delete("/:uid", async (req, res) => {
     try {
         const { uid } = req.params;

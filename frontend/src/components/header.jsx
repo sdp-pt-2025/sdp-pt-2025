@@ -8,7 +8,7 @@ export function Logo({ className = "" }) {
             whileHover={{ scale: 1.05 }}
             className={`flex items-center gap-3 ${className}`}
         >
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-600! rounded-lg flex items-center justify-center">
                 <svg
                     className="w-6 h-6 text-white"
                     fill="none"
@@ -30,17 +30,19 @@ export function Logo({ className = "" }) {
 
 // Header Component
 export function Header({ user, UserMenuComponent }) {
-    console.log('Header rendering with:', { user, UserMenuComponent });
+    // console.log('Header rendering with:', { user, UserMenuComponent });
     return (
         <motion.header
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="relative z-10 px-6 py-6"
+            className="relative z-900 px-6 py-6"
             // style={{ backgroundColor: 'red' }}
         >
             <nav className="max-w-6xl mx-auto flex items-center justify-between">
                 <Logo />
                 {user && UserMenuComponent && <UserMenuComponent user={user} />}
+                {/* Injalo */}
+                
             </nav>
         </motion.header>
     );
