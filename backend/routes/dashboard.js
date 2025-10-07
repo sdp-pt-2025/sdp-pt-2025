@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
         // Get current date range for "this week" calculations
         const now = new Date();
         const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday
+        startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday, standard.
         startOfWeek.setHours(0, 0, 0, 0);
         
         const endOfWeek = new Date(startOfWeek);
@@ -329,7 +329,7 @@ router.get("/", async (req, res) => {
 router.get("/weekly-stats", async (req, res) => {
     try {
         const userId = req.user?.uid || req.query.userId;
-        const weekOffset = parseInt(req.query.weekOffset) || 0; // 0 = current week, -1 = last week, etc.
+        const weekOffset = parseInt(req.query.weekOffset) || 0; 
 
         if (!userId) {
             return res.status(400).json({
@@ -543,7 +543,7 @@ router.get("/monthly-stats", async (req, res) => {
             if (module.completedSessions > 0) {
                 module.averageRating = Math.round((module.totalRatings / module.completedSessions) * 10) / 10;
             }
-            delete module.totalRatings; // Remove helper field
+            delete module.totalRatings; 
         });
 
         // Calculate overall monthly totals

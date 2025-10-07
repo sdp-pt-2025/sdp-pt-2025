@@ -9,7 +9,7 @@ export default function ChatListItem({ conversations, selected, onClick }) {
         selected ? "bg-blue-50 border-blue-200" : ""
       }`}
     >
-      {/* ✅ Pass the name string, not the full object */}
+     
       <ChatAvatar name={conversations.name} />
 
       <div className="flex-1 min-w-0 ml-3">

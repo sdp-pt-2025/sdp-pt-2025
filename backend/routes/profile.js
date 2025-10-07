@@ -40,7 +40,7 @@ router.get("/", async (req, res) => {
                 updatedAt: true,
                 studyPreferences: true,
                 availability: true,
-                // Include relationship counts for additional profile stats
+               
                 _count: {
                     select: {
                         createdGroups: true,
@@ -60,7 +60,7 @@ router.get("/", async (req, res) => {
             });
         }
 
-        // Calculate additional profile stats
+       
         const stats = {
             totalGroupsCreated: user._count.createdGroups,
             totalGroupMemberships: user._count.groupMemberships,
@@ -69,7 +69,7 @@ router.get("/", async (req, res) => {
             totalFriendRequestsReceived: user._count.receivedFriendRequests
         };
 
-        // Remove the _count field and add stats
+        
         const { _count, ...profileData } = user;
 
         res.json({
@@ -106,7 +106,7 @@ router.put("/", async (req, res) => {
             });
         }
 
-        // Extract updatable fields from request body
+        
         const {
             displayName,
             photoURL,
@@ -118,7 +118,7 @@ router.put("/", async (req, res) => {
             studyPreferences,
             availability,
             fcmToken,
-            // Remove userId from the update data
+            
             userId: _,
             ...otherFields
         } = req.body;
@@ -138,7 +138,7 @@ router.put("/", async (req, res) => {
             });
         }
 
-        // Validate yearOfStudy
+
         if (yearOfStudy && (yearOfStudy < 1 || yearOfStudy > 10)) {
             return res.status(400).json({
                 success: false,
@@ -146,7 +146,7 @@ router.put("/", async (req, res) => {
             });
         }
 
-        // Validate modules array
+       
         if (modules && !Array.isArray(modules)) {
             return res.status(400).json({
                 success: false,
@@ -165,7 +165,7 @@ router.put("/", async (req, res) => {
             });
         }
 
-        // Validate availability structure
+        
         if (availability && typeof availability !== 'object') {
             return res.status(400).json({
                 success: false,
@@ -199,7 +199,7 @@ router.put("/", async (req, res) => {
         if (availability !== undefined) updateData.availability = availability;
         if (fcmToken !== undefined) updateData.fcmToken = fcmToken;
 
-        // Always update the updatedAt timestamp
+       
         updateData.updatedAt = new Date();
 
         // Update user profile
@@ -300,7 +300,7 @@ router.post("/upload-photo", async (req, res) => {
             });
         }
 
-        // Update only the photo URL
+       
         const updatedUser = await prisma.user.update({
             where: { uid: userId },
             data: { 
@@ -581,7 +581,7 @@ router.delete("/", async (req, res) => {
             });
         }
 
-        // Soft delete - set isActive to false instead of actually deleting
+       
         const updatedUser = await prisma.user.update({
             where: { uid: userId },
             data: { 

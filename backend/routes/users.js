@@ -5,7 +5,7 @@ const router = express.Router();
 
 const prisma = new PrismaClient();
 
-// POST /api/users - Create a new user
+
 router.post("/", async (req, res) => {
     try {
         const userData = req.body;
@@ -69,7 +69,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-// GET /api/users/:uid - Get user by UID
 router.get("/:uid", async (req, res) => {
     try {
         const { uid } = req.params;
@@ -112,7 +111,7 @@ router.get("/:uid", async (req, res) => {
     }
 });
 
-// update users
+
 router.patch("/:uid", async (req, res) => {
     try {
         const { uid } = req.params;
@@ -263,7 +262,7 @@ router.post("/:uid/migrate", async (req, res) => {
     }
 });
 
-// DELETE /api/users/:uid - Delete user (admin only)
+
 router.delete("/:uid", async (req, res) => {
     try {
         const { uid } = req.params;

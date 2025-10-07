@@ -7,7 +7,7 @@ import {
 } from "../../lib/constants/chatsPageStrings";
 import { Paperclip } from "lucide-react";
 
-// Components
+
 import ChatList from "./components/ChatList";
 import ChatHeader from "./components/ChatHeader";
 import MessageList from "./components/MessageList";
@@ -25,7 +25,7 @@ export default function ChatInterface() {
   const [attachedFiles, setAttachedFiles] = useState([]);
   const fileInputRef = useRef(null);
 
-  // ✅ Helpers
+
   const getMessagesForChat = (chatId) =>
     chatMessages[chatId]
       ? [...(dummyChats[chatId] || []), ...chatMessages[chatId]]
@@ -33,7 +33,7 @@ export default function ChatInterface() {
 
   const getFilesForChat = (chatId) => chatFiles[chatId] || [];
 
-  // ✅ Actions
+  
   const handleChatSelect = (chat) => {
     setSelectedChat(chat);
     setShowMobileChat(true);

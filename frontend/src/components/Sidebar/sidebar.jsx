@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { signOutUser } from "../../firebase/auth";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 
 export default function Sidebar() {
@@ -34,7 +34,7 @@ export default function Sidebar() {
     return (
       navigation('/'),
       await signOutUser()
-      .then(() => toast.success("See you later!"))
+      .then(() => toast.success("Successfully signed out!") )
       
     );
   }

@@ -234,7 +234,7 @@ export const menuItems = [
     { icon: "👥", label: "Find Partners", href: "/partners" },
     { icon: "📚", label: "Study Groups", href: "/study-groups" },
     // { icon: "📅", label: "Schedule", href: "/schedule" },
-    { icon: "📊", label: "Progress", href: "/progress-tracker" },
+    // { icon: "📊", label: "Progress", href: "/progress-tracker" },
     { icon: "💬", label: "Chat", href: "/chats" },
     { icon: "👤", label: "Profile", href: "/profile" },
     

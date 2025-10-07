@@ -10,13 +10,13 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  // Get current user data
+
   const { userData } = useUserData();
   
   // console.log(userData, "-------------------------")
   const BASE_URL = import.meta.env.VITE_PUBLIC_URL;
 
-  // Fetch dashboard data
+  
   const fetchDashboardData = async (userId) => {
     try {
       setLoading(true);
@@ -42,7 +42,7 @@ const Dashboard = () => {
     }
   };
 
-  // Updated useEffect to depend on userData.uid
+
   useEffect(() => {
     
     if (userData?.uid) {
@@ -53,7 +53,7 @@ const Dashboard = () => {
       setError('User not authenticated');
     }
     
-  }, [userData?.uid]); // Depend on userData.uid specifically
+  }, [userData?.uid]); 
 
   // Calendar functions
   const getDaysInMonth = (date) => {
@@ -87,7 +87,7 @@ const Dashboard = () => {
     });
   };
 
-  // Show loading while waiting for userData or while fetching dashboard data
+
   if (loading || userData === undefined) {
     return (
       <div className='flex h-screen'>
@@ -126,12 +126,12 @@ const Dashboard = () => {
     const firstDay = getFirstDayOfMonth(currentDate);
     const days = [];
     
-    // Empty cells for days before the first day of the month
+ 
     for (let i = 0; i < firstDay; i++) {
       days.push(<div key={`empty-${i}`} className="p-2"></div>);
     }
     
-    // Days of the month
+ 
     for (let day = 1; day <= daysInMonth; day++) {
       const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
       days.push(
@@ -172,7 +172,7 @@ const Dashboard = () => {
 
             {/* Stats Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Total Study Time Card */}
+           
               <div className="rounded-4xl bg-blue-600 p-4 sm:p-6 flex flex-col justify-center gap-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-white font-semibold text-sm">Total Study Time</h4>

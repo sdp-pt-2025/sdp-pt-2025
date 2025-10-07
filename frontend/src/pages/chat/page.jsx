@@ -1,20 +1,20 @@
-// src/pages/Chat/ChatPage.jsx
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/sidebar";
 import ChatList from "./components/ChatList";
 import ChatWindow from "./ChatWindow";
 import { auth } from "../../firebase/init";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 const ChatPage = () => {
   const location = useLocation();
-  const [selectedChatId, setSelectedChatId] = useState(null);
+  const navigate = useNavigate();
+  const { chatId } = useParams();
   const currentUser = auth.currentUser;
-  const BASE_URL = import.meta.env.BACK_URL;
+  const BASE_URL = import.meta.env.VITE_PUBLIC_URL; 
 
   useEffect(() => {
-    // Check if we need to create or navigate to a specific chat
+  
     const params = new URLSearchParams(location.search);
     const partnerId = params.get('partnerId');
     
@@ -25,6 +25,8 @@ const ChatPage = () => {
 
   const createOrNavigateToChat = async (partnerId) => {
     try {
+      const loadingToast = toast.loading('Opening chat...');
+      
       const response = await fetch(`${BASE_URL}/api/chats`, {
         method: 'POST',
         headers: {
@@ -37,19 +39,29 @@ const ChatPage = () => {
       });
 
       const result = await response.json();
+      toast.dismiss(loadingToast);
 
       if (result.success) {
-        setSelectedChatId(result.data.id);
-        // Update URL without partnerId to avoid recreating chat
-        window.history.replaceState({}, '', '/chats');
+        
+        navigate(`/chats/${result.data.id}`, { replace: true });
       } else {
         console.error('Failed to create/get chat:', result.error);
         toast.error('Failed to start conversation');
+        navigate('/chats');
       }
     } catch (error) {
       console.error('Error creating/getting chat:', error);
       toast.error('Error starting conversation');
+      navigate('/chats');
     }
+  };
+
+  const handleChatSelect = (selectedChatId) => {
+    navigate(`/chats/${selectedChatId}`);
+  };
+
+  const handleBackToList = () => {
+    navigate('/chats');
   };
 
   return (
@@ -57,21 +69,21 @@ const ChatPage = () => {
       <Sidebar />
       
       <div className="flex-1 flex">
-        
+        {/* Chat List */}
         <div className={`w-80 bg-white border-r border-gray-200 ${
-          selectedChatId ? 'hidden lg:block' : 'block'
+          chatId ? 'hidden lg:block' : 'block'
         }`}>
-          <ChatList onChatSelect={setSelectedChatId} />
+          <ChatList onChatSelect={handleChatSelect} selectedChatId={chatId} />
         </div>
 
         {/* Chat Window */}
         <div className={`flex-1 ${
-          selectedChatId ? 'block' : 'hidden lg:block'
+          chatId ? 'block' : 'hidden lg:block'
         }`}>
-          {selectedChatId ? (
+          {chatId ? (
             <ChatWindow 
-              chatId={selectedChatId} 
-              onBack={() => setSelectedChatId(null)}
+              key={chatId}
+              onBack={handleBackToList}
             />
           ) : (
             <div className="hidden lg:flex items-center justify-center h-full bg-gray-50">

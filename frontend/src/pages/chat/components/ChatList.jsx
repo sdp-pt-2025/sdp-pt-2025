@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, MessageCircle, Users } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { auth } from "../../../firebase/init";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 const ChatList = () => {
   const [chats, setChats] = useState([]);

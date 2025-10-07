@@ -1,11 +1,11 @@
 import Sidebar from "../../components/Sidebar/sidebar";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
 import { auth } from "../../firebase/init";
 
-// Friend Requests Modal Component
+
 function FriendRequestsModal({ requests, isOpen, onClose, onAccept, onReject }) {
   if (!isOpen) return null;
 
@@ -48,7 +48,7 @@ function FriendRequestsModal({ requests, isOpen, onClose, onAccept, onReject }) 
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => onAccept(request.requestId, request.uid)}
+                      onClick={() => onAccept(request.requestId, request.uid || request.user?.uid)}
                       className="bg-green-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-green-700"
                     >
                       Accept
@@ -70,7 +70,7 @@ function FriendRequestsModal({ requests, isOpen, onClose, onAccept, onReject }) 
   );
 }
 
-// Partner Modal Component
+
 function PartnerModal({ partner, isOpen, onClose, onStartChat }) {
   if (!isOpen || !partner) return null;
 
@@ -276,10 +276,19 @@ export default function Partners() {
         }
       );
       
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const result = await response.json();
       
       if (result.success) {
-        setPendingRequests(result.data || []);
+        // Ensure each request has uid
+        const requestsWithUid = result.data.map(request => ({
+          ...request,
+          uid: request.uid || request.user?.uid
+        }));
+        setPendingRequests(requestsWithUid);
       } else {
         console.error('Failed to fetch pending requests:', result.error);
       }
