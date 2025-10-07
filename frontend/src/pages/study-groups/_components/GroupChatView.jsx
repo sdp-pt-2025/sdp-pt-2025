@@ -586,7 +586,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
         </div>
 
         {/* Premium Message Input */}
-        <div className="fixed bottom-2 right-2 max-w-4xl mx-auto left-2 md:left-60 z-40">
+        <div className="fixed bottom-2 right-2 max-w-4xl mx-auto left-2 md:left-60 z-20">
           <div className="relative overflow-hidden rounded-3xl">
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600/90 via-purple-600/90 to-fuchsia-600/90"></div>
             <div className="relative backdrop-blur-xl bg-white/95 border border-white/20 shadow-2xl p-4">
