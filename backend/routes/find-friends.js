@@ -229,14 +229,14 @@ router.get("/requests", async (req, res) => {
 
         const requests = pendingRequests.map(request => ({
             requestId: request.id,
-            uid: request.requester.uid, // Add this line - frontend expects uid
+            uid: request.requester.uid, 
             displayName: request.requester.displayName,
             photoURL: request.requester.photoURL,
             faculty: request.requester.faculty,
             university: request.requester.university,
             yearOfStudy: request.requester.yearOfStudy,
             modules: request.requester.modules,
-            user: request.requester, // Keep this for backward compatibility
+            user: request.requester, 
             requestedAt: request.createdAt,
             message: request.message
         }));
@@ -373,91 +373,111 @@ router.post("/request", async (req, res) => {
  * @desc    Accept a friend request
  * @access  Public (no auth)
  */
+
 router.post("/request/:friendshipId/accept", async (req, res) => {
     try {
-        const userId = req.user?.uid || req.body.userId || req.query.userId;
-        const { friendshipId } = req.params;
-
-        if (!userId) {
-            return res.status(400).json({
-                success: false,
-                error: "Missing userId"
-            });
+      const userId = req.user?.uid || req.body.userId || req.query.userId;
+      const { friendshipId } = req.params;
+      const { friendId } = req.body; 
+  
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          error: "Missing userId"
+        });
+      }
+  
+      // Find the friendship request
+      const friendship = await prisma.friendship.findFirst({
+        where: {
+          id: friendshipId,
+          receiverId: userId, 
+          status: 'pending'
+        },
+        include: {
+          requester: {
+            select: {
+              uid: true,
+              displayName: true,
+              fcmToken: true
+            }
+          },
+          receiver: {
+            select: {
+              uid: true,
+              displayName: true,
+              fcmToken: true
+            }
+          }
         }
-
-        // Find the friendship request
-        const friendship = await prisma.friendship.findFirst({
-            where: {
-                id: friendshipId,
-                receiverId: userId,
-                status: 'pending'
-            },
-            include: {
-                requester: {
-                    select: {
-                        uid: true,
-                        displayName: true,
-                        fcmToken: true
-                    }
-                }
-            }
+      });
+  
+      if (!friendship) {
+        return res.status(404).json({
+          success: false,
+          error: "Friend request not found or you don't have permission to accept it"
         });
-
-        if (!friendship) {
-            return res.status(404).json({
-                success: false,
-                error: "Friend request not found"
-            });
+      }
+  
+     
+      if (friendId && friendId !== friendship.requesterId) {
+        return res.status(400).json({
+          success: false,
+          error: "Friend ID does not match the request"
+        });
+      }
+  
+      // Get current user info
+      const currentUser = await prisma.user.findUnique({
+        where: { uid: userId },
+        select: { displayName: true }
+      });
+  
+      // Update friendship status
+      const updatedFriendship = await prisma.friendship.update({
+        where: { id: friendshipId },
+        data: {
+          status: 'accepted',
+          acceptedAt: new Date(),
+          respondedAt: new Date()
         }
-
-        // Get current user info
-        const currentUser = await prisma.user.findUnique({
-            where: { uid: userId },
-            select: { displayName: true }
-        });
-
-        // Update friendship status
-        const updatedFriendship = await prisma.friendship.update({
-            where: { id: friendshipId },
-            data: {
-                status: 'accepted',
-                acceptedAt: new Date(),
-                respondedAt: new Date()
-            }
-        });
-
-        // Create notification for requester
-        await prisma.notification.create({
-            data: {
-                userId: friendship.requesterId,
-                senderId: userId,
-                senderName: currentUser.displayName,
-                title: "Friend Request Accepted",
-                body: `${currentUser.displayName} accepted your friend request`,
-                type: "friend_request_response",
-                data: {
-                    friendshipId: friendship.id,
-                    action: 'accept',
-                    responderId: userId
-                }
-            }
-        });
-
-        res.json({
-            success: true,
-            message: "Friend request accepted successfully",
-            data: updatedFriendship
-        });
-
+      });
+  
+      // Create notification for requester
+      await prisma.notification.create({
+        data: {
+          userId: friendship.requesterId,
+          senderId: userId,
+          senderName: currentUser.displayName,
+          title: "Friend Request Accepted",
+          body: `${currentUser.displayName} accepted your friend request`,
+          type: "friend_request_response",
+          data: {
+            friendshipId: friendship.id,
+            action: 'accept',
+            responderId: userId
+          }
+        }
+      });
+  
+      res.json({
+        success: true,
+        message: "Friend request accepted successfully",
+        data: {
+          friendshipId: updatedFriendship.id,
+          status: updatedFriendship.status
+        }
+      });
+  
     } catch (error) {
-        console.error("Error accepting friend request:", error);
-        res.status(500).json({
-            success: false,
-            error: "Failed to accept friend request",
-            message: error.message
-        });
+      console.error("Error accepting friend request:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to accept friend request",
+        message: error.message
+      });
     }
-});
+  });
 
 /**
  * @route   POST /api/find-friends/request/:friendshipId/reject

@@ -313,7 +313,7 @@ router.get("/", async (req, res) => {
     }
 });
 
-// POST /api/study-groups/:id/request-join - Request to join a study group
+
 router.post("/:id/request-join", async (req, res) => {
     try {
         const { id } = req.params;
@@ -433,7 +433,7 @@ router.post("/:id/request-join", async (req, res) => {
     }
 });
 
-// POST /api/study-groups/:id/respond-request - Approve/reject join request
+
 router.post("/:id/respond-request", async (req, res) => {
     try {
         const { id } = req.params;
@@ -564,7 +564,7 @@ router.post("/:id/respond-request", async (req, res) => {
     }
 });
 
-// GET /api/study-groups/:id/join-requests - Get pending join requests (admin only)
+
 router.get("/:id/join-requests", async (req, res) => {
     try {
         const { id } = req.params;
@@ -619,7 +619,7 @@ router.get("/:id/join-requests", async (req, res) => {
     }
 });
 
-// GET /api/study-groups/:id/messages - Get group messages
+
 router.get("/:id/messages", async (req, res) => {
     try {
         const { id } = req.params;
@@ -675,7 +675,7 @@ router.get("/:id/messages", async (req, res) => {
     }
 });
 
-// POST /api/study-groups/:id/messages - Send message
+
 router.post("/:id/messages", async (req, res) => {
     try {
         const { id } = req.params;
@@ -804,7 +804,7 @@ router.get("/:id/is-member", async (req, res) => {
     }
 })
 
-// DELETE /api/study-groups/:id - Delete a study group (creator only)
+
 router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -856,9 +856,9 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-// Add these routes to your existing study-groups router
 
-// POST /api/study-groups/:id/sessions - Start a study session
+
+
 router.post("/:id/sessions", async (req, res) => {
     try {
         const { id } = req.params;
@@ -872,7 +872,7 @@ router.post("/:id/sessions", async (req, res) => {
             notes 
         } = req.body;
 
-        // Verify user is member and get group info
+       
         const member = await prisma.groupMember.findUnique({
             where: {
                 userId_groupId: {
@@ -1021,7 +1021,7 @@ router.post("/:id/sessions", async (req, res) => {
     }
 });
 
-// PUT /api/study-groups/:id/sessions/:sessionId/end - End a study session
+
 router.put("/:id/sessions/:sessionId/end", async (req, res) => {
     try {
         const { id, sessionId } = req.params;
@@ -1153,7 +1153,7 @@ router.put("/:id/sessions/:sessionId/end", async (req, res) => {
     }
 });
 
-// POST /api/study-groups/:id/sessions/:sessionId/join - Join an active session
+
 router.post("/:id/sessions/:sessionId/join", async (req, res) => {
     try {
         const { id, sessionId } = req.params;
@@ -1246,7 +1246,7 @@ router.post("/:id/sessions/:sessionId/join", async (req, res) => {
     }
 });
 
-// GET /api/study-groups/:id/sessions/active - Get active session
+
 router.get("/:id/sessions/active", async (req, res) => {
     try {
         const { id } = req.params;
@@ -1310,7 +1310,7 @@ router.get("/:id/sessions/active", async (req, res) => {
     }
 });
 
-// GET /api/study-groups/:id/sessions/history - Get session history
+
 router.get("/:id/sessions/history", async (req, res) => {
     try {
         const { id } = req.params;
@@ -1394,7 +1394,7 @@ router.get("/:id/sessions/history", async (req, res) => {
     }
 });
 
-// GET /api/study-groups/:id/progress - Get group progress summary
+
 router.get("/:id/progress", async (req, res) => {
     try {
         const { id } = req.params;
