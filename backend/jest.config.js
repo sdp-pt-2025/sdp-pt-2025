@@ -1,14 +1,12 @@
 export default {
-    preset: "node",
     testEnvironment: "node",
     transform: {},
-    extensionsToTreatAsEsm: [".js"],
     globals: {
         "ts-jest": {
             useESM: true,
         },
     },
-    moduleNameMapping: {
+    moduleNameMapper: {
         "^(\\.{1,2}/.*)\\.js$": "$1",
     },
     testMatch: ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"],
@@ -38,7 +36,6 @@ export default {
     clearMocks: true,
     resetMocks: true,
     restoreMocks: true,
-    testSequencer: "@jest/test-sequencer",
     reporters: [
         "default",
         [
