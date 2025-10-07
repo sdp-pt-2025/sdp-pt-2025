@@ -11,7 +11,7 @@ function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [neonUser, setNeonUser] = useState(null);
 
-  // Function to create user in Neon via Express API
+
   const createUserInNeon = async (firebaseUser, additionalData = {}) => {
     try {
       const userData = {
@@ -173,7 +173,7 @@ function AuthProvider({ children }) {
     }
   };
 
-  // Function to check if user needs profile completion
+  
   const checkUserProfileComplete = (userData) => {
     if (!userData) return false;
     
@@ -186,25 +186,24 @@ function AuthProvider({ children }) {
     );
   };
 
-  // Enhanced auth state change handler
+ 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       // console.log("🔄 Auth state changed:", firebaseUser?.email || 'logged out');
       
       if (firebaseUser) {
         try {
-          // Step 1: Check if user exists in Neon
+          
           let userData = await getNeonUser(firebaseUser.uid);
           
-          // Step 2: If user doesn't exist in Neon, try migration
+          
           if (!userData) {
             // console.log('🔄 User not found in Neon, attempting migration...');
             try {
               userData = await migrateFirebaseUser(firebaseUser);
             } catch (migrationError) {
               console.error('❌ Migration failed:', migrationError);
-              // If migration also fails, create a basic user record
-              // console.log('⚠️ Migration failed, creating new user record...');
+              
               userData = await createUserInNeon(firebaseUser, {
                 university: 'University of The Witwatersrand',
                 faculty: 'Unknown',
@@ -213,14 +212,14 @@ function AuthProvider({ children }) {
               });
             }
           } else {
-            // Step 3: User exists, update their last login time
+            
             // console.log('🔄 Updating last login time...');
             await updateLastLogin(firebaseUser.uid);
           }
 
           setNeonUser(userData);
           
-          // Step 4: Check if profile is complete and set user state
+          
           const isProfileComplete = checkUserProfileComplete(userData);
           setUser({
             ...firebaseUser,

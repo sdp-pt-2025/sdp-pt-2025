@@ -18,7 +18,7 @@ app.use("/api/health2", healthRouter2);
 // Middleware
 app.use(cors({
     origin: process.env.NODE_ENV === "production" 
-        ? ["http://localhost:5173", ] 
+        ? ["https://campus-study.vercel.app", ] 
         : ["http://localhost:5173", "http://localhost:5174"], 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -59,7 +59,7 @@ app.get("/", (req, res) => {
     });
 });
 
-// In your app.js
+
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'https://campus-study.vercel.app', "http://localhost:5173");
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');

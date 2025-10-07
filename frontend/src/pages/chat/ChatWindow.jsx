@@ -1,4 +1,4 @@
-// src/components/Chat/ChatWindow.jsx
+
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
@@ -304,7 +304,7 @@ const ChatWindow = () => {
         </button>
       </div>
 
-      {/* Messages */}
+      
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messagesLoading ? (
           <div className="flex items-center justify-center h-32">
@@ -402,7 +402,7 @@ const ChatWindow = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Reply indicator */}
+      
       {replyingTo && (
         <div className="bg-blue-50 border-t border-blue-200 p-3 flex items-center justify-between">
           <div className="flex-1">

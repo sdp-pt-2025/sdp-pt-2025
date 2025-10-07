@@ -141,7 +141,7 @@ const CreateGroupForm = ({ onBack, currentUser, baseUrl, onGroupCreated }) => {
     setLoading(true);
     
     try {
-      // Prepare schedule data - only include if frequency is set
+      
       const scheduleData = formData.schedule.frequency ? {
         frequency: formData.schedule.frequency,
         dayOfWeek: formData.schedule.dayOfWeek,
@@ -152,7 +152,7 @@ const CreateGroupForm = ({ onBack, currentUser, baseUrl, onGroupCreated }) => {
         timezone: formData.schedule.timezone
       } : null;
 
-      // Prepare location data
+     
       const locationData = {
         type: formData.location.type,
         venue: formData.location.venue || null,
@@ -168,7 +168,7 @@ const CreateGroupForm = ({ onBack, currentUser, baseUrl, onGroupCreated }) => {
         body: JSON.stringify({
           name: formData.name,
           description: formData.description,
-          module: formData.modules.join(', '), // Join modules for the single module field
+          module: formData.modules.join(', '), 
           topic: formData.topic,
           createdBy: currentUser.uid,
           createdByName: currentUser.displayName,
@@ -185,7 +185,7 @@ const CreateGroupForm = ({ onBack, currentUser, baseUrl, onGroupCreated }) => {
       
       if (result.success) {
         toast.success('Study group created successfully!', { duration: 5000});
-        // Reset form
+        
         setFormData({
           name: "",
           description: "",
@@ -218,7 +218,7 @@ const CreateGroupForm = ({ onBack, currentUser, baseUrl, onGroupCreated }) => {
           onGroupCreated(result.data);
         }
         
-        // Go back to browse view
+        // Go back to browse view, not the hom page
         onBack();
       } else {
         toast.error(result.error || 'Failed to create study group');

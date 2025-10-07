@@ -1,4 +1,4 @@
-// src/pages/Chat/ChatPage.jsx
+
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/sidebar";
@@ -40,7 +40,7 @@ const ChatPage = () => {
 
       if (result.success) {
         setSelectedChatId(result.data.id);
-        // Update URL without partnerId to avoid recreating chat
+        
         window.history.replaceState({}, '', '/chats');
       } else {
         console.error('Failed to create/get chat:', result.error);

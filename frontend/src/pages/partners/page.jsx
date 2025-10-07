@@ -5,8 +5,7 @@ import { toast } from "react-hot-toast";
 import { MessageCircle } from "lucide-react";
 import { auth } from "../../firebase/init";
 
-// Friend Requests Modal Component
-// Fix the FriendRequestsModal to ensure uid is available
+
 function FriendRequestsModal({ requests, isOpen, onClose, onAccept, onReject }) {
   if (!isOpen) return null;
 
@@ -71,7 +70,7 @@ function FriendRequestsModal({ requests, isOpen, onClose, onAccept, onReject }) 
   );
 }
 
-// Partner Modal Component
+
 function PartnerModal({ partner, isOpen, onClose, onStartChat }) {
   if (!isOpen || !partner) return null;
 

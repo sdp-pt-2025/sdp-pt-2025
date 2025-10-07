@@ -11,11 +11,11 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  // Get current user ID - replace with your auth system
+
   const BASE_URL = import.meta.env.VITE_PUBLIC_URL ;
   const {uid} = auth.currentUser
 
-  // Fetch user profile data
+ 
   const fetchProfile = async () => {
     try {
       setLoading(true);
@@ -78,7 +78,7 @@ const Profile = () => {
     }
   };
 
-  // Handle input changes
+ 
   const handleInputChange = (field, value) => {
     setEditedData(prev => ({
       ...prev,
@@ -86,7 +86,7 @@ const Profile = () => {
     }));
   };
 
-  // Handle nested object changes (studyPreferences, availability)
+
   const handleNestedChange = (parent, field, value) => {
     setEditedData(prev => ({
       ...prev,
@@ -97,7 +97,7 @@ const Profile = () => {
     }));
   };
 
-  // Handle array changes (modules)
+  
   const handleArrayChange = (field, index, value) => {
     setEditedData(prev => ({
       ...prev,
