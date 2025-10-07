@@ -9,6 +9,9 @@ import dashboardRouter from "./routes/dashboard.js";
 import profileRouter from "./routes/profile.js";
 import FriendsRouter from "./routes/find-friends.js";
 
+// import uploadRouter from "./routes/uploads.js";
+
+
 
 
 const app = express();
@@ -48,6 +51,9 @@ app.use("/api/profile", profileRouter);
 
 //find friends
 app.use("/api/find-friends", FriendsRouter);
+
+//file uploads
+// app.use("/api/upload", uploadRouter);
 
 app.get("/", (req, res) => {
     res.json({ 
