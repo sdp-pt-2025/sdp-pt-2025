@@ -676,6 +676,81 @@ router.get("/:id/messages", async (req, res) => {
 });
 
 
+
+
+// router.post("/:id/messages", async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { userId, message, messageType = "text", attachments = [] } = req.body;
+
+//         // Verify user is member
+//         const member = await prisma.groupMember.findUnique({
+//             where: {
+//                 userId_groupId: {
+//                     userId: userId,
+//                     groupId: id
+//                 }
+//             },
+//             include: {
+//                 user: {
+//                     select: {
+//                         displayName: true
+//                     }
+//                 }
+//             }
+//         });
+
+//         if (!member) {
+//             return res.status(403).json({
+//                 success: false,
+//                 error: "You must be a member to send messages"
+//             });
+//         }
+
+//         const newMessage = await prisma.groupMessage.create({
+//             data: {
+//                 groupId: id,
+//                 senderId: userId,
+//                 senderName: member.user.displayName,
+//                 message: message,
+//                 messageType: messageType,
+//                 attachments: attachments
+//             },
+//             include: {
+//                 sender: {
+//                     select: {
+//                         uid: true,
+//                         displayName: true,
+//                         photoURL: true
+//                     }
+//                 }
+//             }
+//         });
+
+//         // Update group last activity
+//         await prisma.studyGroup.update({
+//             where: { id },
+//             data: {
+//                 lastActivityAt: new Date()
+//             }
+//         });
+
+//         res.json({
+//             success: true,
+//             data: newMessage
+//         });
+
+//     } catch (error) {
+//         console.error("Error sending message:", error);
+//         res.status(500).json({
+//             success: false,
+//             error: "Failed to send message",
+//             message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+//         });
+//     }
+// });
+
+
 router.post("/:id/messages", async (req, res) => {
     try {
         const { id } = req.params;
@@ -705,14 +780,31 @@ router.post("/:id/messages", async (req, res) => {
             });
         }
 
+        // Process attachments to ensure they're in the correct format
+        const processedAttachments = attachments.map(attachment => {
+            if (typeof attachment === 'string') {
+                // Old format - just filename
+                return attachment;
+            } else {
+                // New format - object with url, filename, etc.
+                return {
+                    url: attachment.url,
+                    filename: attachment.filename,
+                    size: attachment.size,
+                    type: attachment.type,
+                    storagePath: attachment.storagePath
+                };
+            }
+        });
+
         const newMessage = await prisma.groupMessage.create({
             data: {
                 groupId: id,
                 senderId: userId,
                 senderName: member.user.displayName,
-                message: message,
+                message: message || '',
                 messageType: messageType,
-                attachments: attachments
+                attachments: processedAttachments
             },
             include: {
                 sender: {
@@ -743,6 +835,69 @@ router.post("/:id/messages", async (req, res) => {
         res.status(500).json({
             success: false,
             error: "Failed to send message",
+            message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+        });
+    }
+});
+
+// Add a new route to delete files (optional)
+router.delete("/:id/messages/:messageId/file", async (req, res) => {
+    try {
+        const { id, messageId } = req.params;
+        const { userId, storagePath } = req.body;
+
+        // Verify message exists and user is authorized
+        const message = await prisma.groupMessage.findUnique({
+            where: { id: messageId }
+        });
+
+        if (!message || message.groupId !== id) {
+            return res.status(404).json({
+                success: false,
+                error: "Message not found"
+            });
+        }
+
+        // Check if user is the sender or group admin
+        const studyGroup = await prisma.studyGroup.findUnique({
+            where: { id }
+        });
+
+        const isAuthorized = message.senderId === userId || studyGroup.createdBy === userId;
+
+        if (!isAuthorized) {
+            return res.status(403).json({
+                success: false,
+                error: "You don't have permission to delete this file"
+            });
+        }
+
+        // Note: Firebase Storage deletion would need to be done client-side
+        // or with Firebase Admin SDK on the backend
+        // For now, just remove the attachment from the message
+
+        const updatedAttachments = message.attachments.filter(
+            att => att.storagePath !== storagePath
+        );
+
+        await prisma.groupMessage.update({
+            where: { id: messageId },
+            data: {
+                attachments: updatedAttachments,
+                messageType: updatedAttachments.length > 0 ? "file" : "text"
+            }
+        });
+
+        res.json({
+            success: true,
+            message: "File reference removed successfully"
+        });
+
+    } catch (error) {
+        console.error("Error deleting file:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to delete file",
             message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
         });
     }
