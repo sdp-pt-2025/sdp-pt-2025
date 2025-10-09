@@ -166,7 +166,7 @@ model GroupMessage {
   senderName  String
   message     String
   messageType String    @default("text")
-  attachments String[]
+  attachments Json? // Changed from String[] to Json
   replyTo     String?
   edited      Boolean   @default(false)
   editedAt    DateTime?

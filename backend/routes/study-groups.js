@@ -751,10 +751,181 @@ router.get("/:id/messages", async (req, res) => {
 // });
 
 
+// router.post("/:id/messages", async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { userId, message, messageType = "text", attachments = [] } = req.body;
+
+//         // Verify user is member
+//         const member = await prisma.groupMember.findUnique({
+//             where: {
+//                 userId_groupId: {
+//                     userId: userId,
+//                     groupId: id
+//                 }
+//             },
+//             include: {
+//                 user: {
+//                     select: {
+//                         displayName: true
+//                     }
+//                 }
+//             }
+//         });
+
+//         if (!member) {
+//             return res.status(403).json({
+//                 success: false,
+//                 error: "You must be a member to send messages"
+//             });
+//         }
+
+//         // For String[] type: Convert objects to JSON strings or extract URLs
+//         let attachmentsData = [];
+        
+//         if (attachments && attachments.length > 0) {
+//             attachmentsData = attachments.map(att => {
+//                 if (typeof att === 'string') {
+//                     return att; // Already a string (URL)
+//                 }
+//                 // Convert entire object to JSON string
+//                 return JSON.stringify({
+//                     url: att.url,
+//                     filename: att.filename || att.originalName,
+//                     size: att.size,
+//                     type: att.type,
+//                     storagePath: att.storagePath
+//                 });
+//             });
+//         }
+
+//         const newMessage = await prisma.groupMessage.create({
+//             data: {
+//                 groupId: id,
+//                 senderId: userId,
+//                 senderName: member.user.displayName,
+//                 message: message || '',
+//                 messageType: messageType,
+//                 attachments: attachmentsData // Array of strings
+//             },
+//             include: {
+//                 sender: {
+//                     select: {
+//                         uid: true,
+//                         displayName: true,
+//                         photoURL: true
+//                     }
+//                 }
+//             }
+//         });
+
+//         // Parse attachments back for response
+//         const responseMessage = {
+//             ...newMessage,
+//             attachments: newMessage.attachments.map(att => {
+//                 try {
+//                     return JSON.parse(att);
+//                 } catch {
+//                     return att;
+//                 }
+//             })
+//         };
+
+//         await prisma.studyGroup.update({
+//             where: { id },
+//             data: {
+//                 lastActivityAt: new Date()
+//             }
+//         });
+
+//         res.json({
+//             success: true,
+//             data: responseMessage
+//         });
+
+//     } catch (error) {
+//         console.error("Error sending message:", error);
+//         res.status(500).json({
+//             success: false,
+//             error: "Failed to send message",
+//             message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+//         });
+//     }
+// });
+
+// // Also update the GET messages route
+// router.get("/:id/messages", async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { userId, limit = 50, offset = 0 } = req.query;
+
+//         // Verify user is member
+//         const isMember = await prisma.groupMember.findUnique({
+//             where: {
+//                 userId_groupId: {
+//                     userId: userId,
+//                     groupId: id
+//                 }
+//             }
+//         });
+
+//         if (!isMember) {
+//             return res.status(403).json({
+//                 success: false,
+//                 error: "You must be a member to view messages"
+//             });
+//         }
+
+//         const messages = await prisma.groupMessage.findMany({
+//             where: { groupId: id },
+//             include: {
+//                 sender: {
+//                     select: {
+//                         uid: true,
+//                         displayName: true,
+//                         photoURL: true
+//                     }
+//                 }
+//             },
+//             orderBy: {
+//                 createdAt: "desc"
+//             },
+//             take: parseInt(limit),
+//             skip: parseInt(offset)
+//         });
+
+//         // Parse attachments from JSON strings back to objects
+//         const messagesWithParsedAttachments = messages.map(msg => ({
+//             ...msg,
+//             attachments: msg.attachments.map(att => {
+//                 try {
+//                     return JSON.parse(att);
+//                 } catch {
+//                     return att;
+//                 }
+//             })
+//         }));
+
+//         res.json({
+//             success: true,
+//             data: messagesWithParsedAttachments.reverse()
+//         });
+
+//     } catch (error) {
+//         console.error("Error fetching messages:", error);
+//         res.status(500).json({
+//             success: false,
+//             error: "Failed to fetch messages",
+//             message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+//         });
+//     }
+// });
 router.post("/:id/messages", async (req, res) => {
     try {
         const { id } = req.params;
         const { userId, message, messageType = "text", attachments = [] } = req.body;
+
+        // console.log("📩 Received attachments:", JSON.stringify(attachments, null, 2));
 
         // Verify user is member
         const member = await prisma.groupMember.findUnique({
@@ -780,22 +951,29 @@ router.post("/:id/messages", async (req, res) => {
             });
         }
 
-        // Process attachments to ensure they're in the correct format
-        const processedAttachments = attachments.map(attachment => {
-            if (typeof attachment === 'string') {
-                
-                return attachment;
-            } else {
-                // New format - object with url, filename, etc.
-                return {
-                    url: attachment.url,
-                    filename: attachment.filename,
-                    size: attachment.size,
-                    type: attachment.type,
-                    storagePath: attachment.storagePath
-                };
-            }
-        });
+        // 🔥 Process attachments for String[] storage
+        let attachmentsData = [];
+        
+        if (attachments && attachments.length > 0) {
+            attachmentsData = attachments.map(att => {
+                if (typeof att === 'string') {
+                    ('Attachment is already a string:', att);
+                    return att;
+                }
+                // Convert object to JSON string
+                const jsonString = JSON.stringify({
+                    url: att.url,
+                    filename: att.filename || att.originalName,
+                    size: att.size,
+                    type: att.type,
+                    storagePath: att.storagePath
+                });
+                // console.log('Stringified attachment:', jsonString);
+                return jsonString;
+            });
+        }
+
+        // console.log("📎 Saving attachments to DB:", attachmentsData);
 
         const newMessage = await prisma.groupMessage.create({
             data: {
@@ -804,7 +982,7 @@ router.post("/:id/messages", async (req, res) => {
                 senderName: member.user.displayName,
                 message: message || '',
                 messageType: messageType,
-                attachments: processedAttachments
+                attachments: attachmentsData
             },
             include: {
                 sender: {
@@ -817,7 +995,9 @@ router.post("/:id/messages", async (req, res) => {
             }
         });
 
-       
+        // console.log("✅ Message created with ID:", newMessage.id);
+
+        // Update group activity
         await prisma.studyGroup.update({
             where: { id },
             data: {
@@ -825,13 +1005,27 @@ router.post("/:id/messages", async (req, res) => {
             }
         });
 
+        // 🔥 Parse attachments back to objects for response
+        const responseMessage = {
+            ...newMessage,
+            attachments: newMessage.attachments.map(att => {
+                try {
+                    return JSON.parse(att);
+                } catch {
+                    return { url: att, filename: 'Download' };
+                }
+            })
+        };
+
+        // console.log("📤 Sending response:", JSON.stringify(responseMessage, null, 2));
+
         res.json({
             success: true,
-            data: newMessage
+            data: responseMessage
         });
 
     } catch (error) {
-        console.error("Error sending message:", error);
+        console.error("❌ Error sending message:", error);
         res.status(500).json({
             success: false,
             error: "Failed to send message",
@@ -840,6 +1034,97 @@ router.post("/:id/messages", async (req, res) => {
     }
 });
 
+
+router.get("/:id/messages", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId, limit = 50, offset = 0 } = req.query;
+
+        // Verify user is member
+        const isMember = await prisma.groupMember.findUnique({
+            where: {
+                userId_groupId: {
+                    userId: userId,
+                    groupId: id
+                }
+            }
+        });
+
+        if (!isMember) {
+            return res.status(403).json({
+                success: false,
+                error: "You must be a member to view messages"
+            });
+        }
+
+        const messages = await prisma.groupMessage.findMany({
+            where: { groupId: id },
+            include: {
+                sender: {
+                    select: {
+                        uid: true,
+                        displayName: true,
+                        photoURL: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            take: parseInt(limit),
+            skip: parseInt(offset)
+        });
+
+        // 🔥 FIX: Parse attachments from JSON strings to objects
+        const messagesWithParsedAttachments = messages.map(msg => {
+            let parsedAttachments = [];
+            
+            if (msg.attachments && Array.isArray(msg.attachments)) {
+                parsedAttachments = msg.attachments.map(att => {
+                    // If it's a string, try to parse it as JSON
+                    if (typeof att === 'string') {
+                        try {
+                            const parsed = JSON.parse(att);
+                            // console.log('Parsed attachment:', parsed);
+                            return parsed;
+                        } catch (e) {
+                            // If parsing fails, it might be a plain URL string
+                            // console.log('Could not parse, returning as-is:', att);
+                            return { url: att, filename: 'Download' };
+                        }
+                    }
+                    // If it's already an object, return it
+                    return att;
+                });
+            }
+
+            return {
+                ...msg,
+                attachments: parsedAttachments
+            };
+        });
+
+        // console.log('Sending messages with parsed attachments:', 
+            messagesWithParsedAttachments.map(m => ({
+                id: m.id,
+                attachments: m.attachments
+            }))
+        );
+
+        res.json({
+            success: true,
+            data: messagesWithParsedAttachments.reverse()
+        });
+
+    } catch (error) {
+        console.error("Error fetching messages:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to fetch messages",
+            message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+        });
+    }
+});
 
 router.delete("/:id/messages/:messageId/file", async (req, res) => {
     try {
