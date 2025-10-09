@@ -642,7 +642,7 @@ router.get("/:id/messages", async (req, res) => {
                     return att;
                 });
             }
-
+        
             return {
                 ...msg,
                 attachments: parsedAttachments
