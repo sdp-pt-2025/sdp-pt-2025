@@ -529,11 +529,11 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
     <div className="flex h-screen bg-gradient-to-br from-violet-50/30 via-purple-50/30 to-fuchsia-50/30">
       <div className="flex-1 flex flex-col">
         <div className="overflow-hidden rounded-3xl mt-2 mb-1 fixed top-0 right-2 max-w-4xl left-2 md:left-60 z-10 mx-auto">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-blue-900 to-blue-800 opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-blue-800 opacity-90"></div>
           
           <div className="absolute inset-0 opacity-30">
-            <div className="absolute top-0 left-0 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-            <div className="absolute top-0 right-0 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+            <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+            <div className="absolute top-0 right-0 w-72 h-72 bg-blue-800 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
           </div>
 
           <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl">
@@ -541,7 +541,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={onBack}
-                  className="p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-110"
+                  className="p-2.5 hover:bg-white/20 rounded-xl transition-all z-15 duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-110"
                 >
                   <ChevronLeft className="w-5 h-5 text-white" />
                 </button>
@@ -549,11 +549,11 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
-                      <span className="text-lg font-bold text-white">
+                      <span className="text-lg font-bold text-white z-20">
                         {group?.name?.charAt(0) || 'G'}
                       </span>
                     </div>
-                    <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-2xl blur-md opacity-50"></div>
+                    {/* <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-2xl blur-md opacity-50"></div> */}
                   </div>
                   
                   <div>
@@ -563,7 +563,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
                     <div className="flex items-center gap-2 mt-0.5">
                       <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full border border-white/30">
                         <Users className="w-3 h-3 text-white/90" />
-                        <span className="text-xs font-medium text-white/90">
+                        <span className="text-xs font-medium text-white/90 z-20">
                           {group?.memberCount || 0}
                         </span>
                       </div>

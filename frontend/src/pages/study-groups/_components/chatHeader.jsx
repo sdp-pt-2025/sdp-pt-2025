@@ -28,7 +28,7 @@ import {
   Lock
 } from "lucide-react";
 
-// Premium Chat Header Component
+
 export const ChatHeader = ({ 
   group, 
   onBack, 
@@ -48,7 +48,7 @@ export const ChatHeader = ({
   isAdmin 
 }) => (
   <div className="relative overflow-hidden rounded-3xl mb-4 group">
-    {/* Animated gradient background */}
+
     <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 opacity-90"></div>
     
     {/* Animated overlay patterns */}
@@ -67,18 +67,18 @@ export const ChatHeader = ({
             onClick={onBack}
             className="group/btn p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-110"
           >
-            <ChevronLeft className="w-5 h-5 text-white group-hover/btn:text-white transition-colors" />
+            <ChevronLeft className="w-5 h-5 z-15 text-white group-hover/btn:text-white transition-colors" />
           </button>
           
           <div className="flex items-center gap-4">
             {/* Group Avatar with glow effect */}
             <div className="relative">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg group-hover:shadow-purple-500/50 transition-all duration-500">
-                <span className="text-xl font-bold text-white">
+                <span className="text-xl font-bold text-white z-20 flex md:hidden">
                   {group?.name?.charAt(0) || 'G'}
                 </span>
               </div>
-              <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-2xl blur-md opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div>
+              {/* <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-2xl blur-md opacity-50 group-hover:opacity-75 transition-opacity duration-500"></div> */}
             </div>
             
             {/* Group Info */}
