@@ -28,6 +28,8 @@ import uuid4 from "uuid4";
 
 import  {auth}  from "../../../firebase/init";
 
+
+
 const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
