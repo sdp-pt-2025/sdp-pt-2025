@@ -1,60 +1,30 @@
 import express from "express";
-import healthRouter from "./routes/health.js";
 import cors from "cors";
+import healthRouter from "./routes/health.js";
 import userRoutes from "./routes/users.js";
 import studyGroupRouter from "./routes/study-groups.js";
-import healthRouter2 from "./src/routes/health.js";
 import chatRouter from "./routes/chats.js";
 import dashboardRouter from "./routes/dashboard.js";
 import profileRouter from "./routes/profile.js";
 import FriendsRouter from "./routes/find-friends.js";
-
-// import uploadRouter from "./routes/uploads.js";
-
-
-
+import uploadRouter from "./routes/uploads.js";
 
 const app = express();
-app.use("/api/health2", healthRouter2);
 
-
-// Middleware
+// CORS Middleware - only define once
 app.use(cors({
     origin: process.env.NODE_ENV === "production" 
-        ? ["https://campus-study.vercel.app", 
-          
-        ] 
-        : ["http://localhost:5173", "http://localhost:5174",], 
+        ? ["https://campus-study.vercel.app"] 
+        : ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Body parser middleware
 app.use(express.json({ limit: "10mb" }));
 
-// Endpoint handlers
-app.use("/api/health", healthRouter);
-
-//users
-app.use("/api/users", userRoutes);
-
-//study groups
-app.use("/api/study-groups", studyGroupRouter);
-
-//chat
-app.use("/api/chats", chatRouter);
-
-//dashboard
-app.use("/api/dashboard", dashboardRouter);
-
-//profile
-app.use("/api/profile", profileRouter);
-
-//find friends
-app.use("/api/find-friends", FriendsRouter);
-
-//file uploads
-// app.use("/api/upload", uploadRouter);
-
+// Root endpoint
 app.get("/", (req, res) => {
     res.json({ 
         message: "Backend server is running!",
@@ -62,29 +32,49 @@ app.get("/", (req, res) => {
         availableRoutes: [
             "/api/health",
             "/api/users",
-            "/api/study-groups"
+            "/api/study-groups",
+            "/api/chats",
+            "/api/dashboard",
+            "/api/profile",
+            "/api/find-friends"
         ]
     });
 });
 
+// API Routes
+app.use("/api/health", healthRouter);
+app.use("/api/users", userRoutes);
+app.use("/api/study-groups", studyGroupRouter);
+app.use("/api/chats", chatRouter);
+app.use("/api/dashboard", dashboardRouter);
+app.use("/api/profile", profileRouter);
+app.use("/api/find-friends", FriendsRouter);
+app.use("/api", uploadRouter);
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://campus-study.vercel.app', "http://localhost:5173");
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(200);
-    }
-    next();
-  });
-
+// 404 handler - must be last
 app.use((req, res) => {
     res.status(404).json({
-      message: 'Route not found',
-      availableRoutes: ["/", "/routes/chat", "/routes/profile", "/routes/study-groups", "/routes/dashboard"]
+        message: 'Route not found',
+        path: req.path,
+        availableRoutes: [
+            "/api/health",
+            "/api/users",
+            "/api/study-groups",
+            "/api/chats",
+            "/api/dashboard",
+            "/api/profile",
+            "/api/find-friends"
+        ]
     });
-  });
-  
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(500).json({
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
+    });
+});
+
 export default app;
