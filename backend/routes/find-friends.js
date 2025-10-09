@@ -144,7 +144,11 @@ router.get("/", async (req, res) => {
                         university: true,
                         yearOfStudy: true,
                         faculty: true,
-                        modules: true
+                        modules: true,
+                        email: true,
+                        studyPreferences:true,
+                        preferredStudyTimes: true,
+                        studentId: true
                     }
                 },
                 receiver: {
