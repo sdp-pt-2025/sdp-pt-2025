@@ -124,14 +124,14 @@ export default function StudyBuddyLanding() {
                 {user ? "Go to Dashboard" : "Start Matching"}
               </motion.button>
               
-              <motion.button 
+              {/* <motion.button 
                 className="px-8 py-4 text-white text-xl font-semibold border-2 border-white/20 rounded-full hover:border-cyan-400 hover:text-cyan-400 transition-all duration-300 backdrop-blur-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={()=> toast.success("Demo coming soon!",{duration:5000})}
               >
                 Watch Demo
-              </motion.button>
+              </motion.button> */}
             </motion.div>
           </motion.div>
         </div>
