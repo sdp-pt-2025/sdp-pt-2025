@@ -8,33 +8,52 @@ import chatRouter from "./routes/chats.js";
 import dashboardRouter from "./routes/dashboard.js";
 import profileRouter from "./routes/profile.js";
 import FriendsRouter from "./routes/find-friends.js";
+
 import uploadRouter from "./routes/uploads.js";
 
-const app = express();
 
-// CORS Middleware - MUST BE FIRST (before routes)
+
+
+const app = express();
+app.use("/api/health2", healthRouter2);
+
+
+// Middleware
 app.use(cors({
     origin: process.env.NODE_ENV === "production" 
-        ? ["https://campus-study.vercel.app"] 
-        : ["http://localhost:5173", "http://localhost:5174"], // ✅ Fixed: removed trailing commas
+        ? ["https://campus-study.vercel.app", 
+          
+        ] 
+        : ["http://localhost:5173", "http://localhost:5174",], 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// Body parser middleware
 app.use(express.json({ limit: "10mb" }));
 
-// Routes
-app.use("/api/health2", healthRouter2);
+// Endpoint handlers
 app.use("/api/health", healthRouter);
+
+//users
 app.use("/api/users", userRoutes);
+
+//study groups
 app.use("/api/study-groups", studyGroupRouter);
+
+//chat
 app.use("/api/chats", chatRouter);
+
+//dashboard
 app.use("/api/dashboard", dashboardRouter);
+
+//profile
 app.use("/api/profile", profileRouter);
+
+//find friends
 app.use("/api/find-friends", FriendsRouter);
-app.use("/api", uploadRouter);
+
+//file uploads
+// app.use("/api/upload", uploadRouter);
 
 app.get("/", (req, res) => {
     res.json({ 
@@ -43,30 +62,29 @@ app.get("/", (req, res) => {
         availableRoutes: [
             "/api/health",
             "/api/users",
-            "/api/study-groups",
-            "/api/chats",
-            "/api/dashboard",
-            "/api/profile",
-            "/api/find-friends"
+            "/api/study-groups"
         ]
     });
 });
 
-// 404 handler - MUST BE LAST
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://campus-study.vercel.app', "http://localhost:5173");
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
+    next();
+  });
+
 app.use((req, res) => {
     res.status(404).json({
-        message: 'Route not found',
-        path: req.path,
-        availableRoutes: [
-            "/api/health",
-            "/api/users",
-            "/api/study-groups",
-            "/api/chats",
-            "/api/dashboard",
-            "/api/profile",
-            "/api/find-friends"
-        ]
+      message: 'Route not found',
+      availableRoutes: ["/", "/routes/chat", "/routes/profile", "/routes/study-groups", "/routes/dashboard"]
     });
-});
-
+  });
+  
 export default app;
