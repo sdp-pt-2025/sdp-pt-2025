@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
 import { auth } from "../../firebase/init";
-
+import {  X, Clock, Users, Book, Calendar, MapPin, Star } from 'lucide-react';
 
 function FriendRequestsModal({ requests, isOpen, onClose, onAccept, onReject }) {
   if (!isOpen) return null;
@@ -71,96 +71,314 @@ function FriendRequestsModal({ requests, isOpen, onClose, onAccept, onReject }) 
 }
 
 
+
+
 function PartnerModal({ partner, isOpen, onClose, onStartChat }) {
   if (!isOpen || !partner) return null;
 
+  const studyPreferences = partner.studyPreferences || {};
+  const availability = partner.availability || {};
+
+  // Helper function to format study times
+  const formatStudyTimes = (times) => {
+    if (!times || times.length === 0) return 'Not specified';
+    const timeMap = {
+      'early_morning': 'Early Morning (6AM-9AM)',
+      'morning': 'Morning (9AM-12PM)',
+      'afternoon': 'Afternoon (12PM-5PM)',
+      'evening': 'Evening (5PM-9PM)',
+      'night': 'Night (9PM-12AM)'
+    };
+    return times.map(t => timeMap[t] || t).join(', ');
+  };
+
+  // Helper function to format study style
+  const formatStudyStyle = (style) => {
+    const styleMap = {
+      'visual': 'Visual Learner',
+      'auditory': 'Auditory Learner',
+      'reading': 'Reading/Writing',
+      'kinesthetic': 'Hands-on/Practical'
+    };
+    return styleMap[style] || style || 'Not specified';
+  };
+
+  // Helper function to format availability
+  const formatAvailability = () => {
+    if (!availability || Object.keys(availability).length === 0) {
+      return 'Not specified';
+    }
+    
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const availableDays = days.filter(day => availability[day]?.length > 0);
+    
+    if (availableDays.length === 0) return 'Not specified';
+    
+    return availableDays.map(day => 
+      day.charAt(0).toUpperCase() + day.slice(1)
+    ).join(', ');
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-        
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-800">Partner Details</h2>
+      <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-4 flex items-center justify-between rounded-t-lg">
+          <h2 className="text-xl font-semibold">Complete Profile</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl font-light"
+            className="text-white hover:text-gray-200 transition-colors"
           >
-            ×
+            <X className="w-6 h-6" />
           </button>
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Partner Info */}
-          <div className="text-center">
-            <div className="w-20 h-20 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
+          {/* Basic Info Section */}
+          <div className="text-center pb-6 border-b">
+            <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden">
               {partner.photoURL ? (
                 <img src={partner.photoURL} alt={partner.displayName} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium">
+                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-3xl font-bold">
                   {partner.displayName?.charAt(0)?.toUpperCase() || '?'}
                 </div>
               )}
             </div>
-            <h3 className="text-2xl font-semibold text-slate-800 mb-1">{partner.displayName}</h3>
-            <p className="text-blue-600 font-medium mb-2">{partner.faculty}</p>
-            <span className="inline-block bg-gray-100 text-slate-600 px-3 py-1 rounded-full text-sm">
-              Year {partner.yearOfStudy}
-            </span>
+            <h3 className="text-2xl font-bold text-slate-800 mb-2">{partner.displayName}</h3>
+            <p className="text-blue-600 font-semibold mb-2">{partner.email || 'Email not available'}</p>
+            
+            <div className="flex items-center justify-center space-x-4 text-sm text-slate-600">
+              <span className="flex items-center space-x-1">
+                <Book className="w-4 h-4" />
+                <span>{partner.faculty}</span>
+              </span>
+              <span>•</span>
+              <span className="flex items-center space-x-1">
+                <Calendar className="w-4 h-4" />
+                <span>Year {partner.yearOfStudy}</span>
+              </span>
+              <span>•</span>
+              <span className="flex items-center space-x-1">
+                <MapPin className="w-4 h-4" />
+                <span>{partner.university}</span>
+              </span>
+            </div>
+
+            {partner.studentId && (
+              <p className="text-sm text-slate-500 mt-2">Student ID: {partner.studentId}</p>
+            )}
           </div>
+
+          {/* Compatibility Score */}
+          {(partner.similarityScore || partner.commonModules?.length > 0) && (
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                  <span className="font-semibold text-slate-800">Compatibility Score</span>
+                </div>
+                {partner.similarityScore && (
+                  <span className="text-2xl font-bold text-green-600">{partner.similarityScore}%</span>
+                )}
+              </div>
+              {partner.commonModules && partner.commonModules.length > 0 && (
+                <p className="text-sm text-slate-600 mt-2">
+                  {partner.commonModules.length} common module{partner.commonModules.length > 1 ? 's' : ''}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Modules Section */}
           <div>
-            <h4 className="text-lg font-semibold text-slate-800 mb-3">Modules</h4>
-            <div className="space-y-3">
-              {partner.modules?.map((module, index) => (
-                <div key={index} className="bg-blue-50 rounded-lg p-3">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-sm font-semibold text-blue-700 bg-blue-200 px-2 py-1 rounded">
-                      {module.split(' - ')[0]}
-                    </span>
-                    <span className="text-sm font-medium text-slate-700">{module.split(' - ')[1] || module}</span>
-                  </div>
-                </div>
-              ))}
+            <h4 className="text-lg font-bold text-slate-800 mb-3 flex items-center space-x-2">
+              <Book className="w-5 h-5 text-blue-600" />
+              <span>Enrolled Modules</span>
+            </h4>
+            <div className="space-y-2">
+              {partner.modules && partner.modules.length > 0 ? (
+                partner.modules.map((module, index) => {
+                  const isCommon = partner.commonModules?.includes(module.split(' - ')[0]);
+                  return (
+                    <div 
+                      key={index} 
+                      className={`rounded-lg p-3 ${isCommon ? 'bg-green-50 border border-green-200' : 'bg-blue-50 border border-blue-200'}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-sm font-bold px-2 py-1 rounded ${isCommon ? 'bg-green-200 text-green-800' : 'bg-blue-200 text-blue-700'}`}>
+                            {module.split(' - ')[0]}
+                          </span>
+                          <span className="text-sm font-medium text-slate-700">
+                            {module.split(' - ')[1] || module}
+                          </span>
+                        </div>
+                        {isCommon && (
+                          <span className="text-xs bg-green-600 text-white px-2 py-1 rounded-full">
+                            Common
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-slate-500 text-sm">No modules listed</p>
+              )}
             </div>
           </div>
 
-          {/* Common Modules */}
-          {partner.commonModules && partner.commonModules.length > 0 && (
+          {/* Study Preferences Section */}
+          <div>
+            <h4 className="text-lg font-bold text-slate-800 mb-3 flex items-center space-x-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              <span>Study Preferences</span>
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-slate-50 rounded-lg p-4">
+                <p className="text-sm font-semibold text-slate-600 mb-1">Study Style</p>
+                <p className="text-slate-800">{formatStudyStyle(studyPreferences.studyStyle)}</p>
+              </div>
+              
+              <div className="bg-slate-50 rounded-lg p-4">
+                <p className="text-sm font-semibold text-slate-600 mb-1">Session Duration</p>
+                <p className="text-slate-800">
+                  {studyPreferences.sessionDuration 
+                    ? `${studyPreferences.sessionDuration} minutes` 
+                    : 'Not specified'}
+                </p>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-4">
+                <p className="text-sm font-semibold text-slate-600 mb-1">Group Size Preference</p>
+                <p className="text-slate-800">
+                  {studyPreferences.groupSize 
+                    ? studyPreferences.groupSize.charAt(0).toUpperCase() + studyPreferences.groupSize.slice(1)
+                    : 'Not specified'}
+                </p>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-4">
+                <p className="text-sm font-semibold text-slate-600 mb-1">Environment</p>
+                <p className="text-slate-800">
+                  {studyPreferences.environment 
+                    ? studyPreferences.environment.charAt(0).toUpperCase() + studyPreferences.environment.slice(1)
+                    : 'Not specified'}
+                </p>
+              </div>
+
+              <div className="bg-slate-50 rounded-lg p-4 md:col-span-2">
+                <p className="text-sm font-semibold text-slate-600 mb-1 flex items-center space-x-1">
+                  <Clock className="w-4 h-4" />
+                  <span>Preferred Study Times</span>
+                </p>
+                <p className="text-slate-800 text-sm">
+                  {formatStudyTimes(studyPreferences.preferredStudyTimes)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Weekly Availability */}
+          <div>
+            <h4 className="text-lg font-bold text-slate-800 mb-3 flex items-center space-x-2">
+              <Calendar className="w-5 h-5 text-blue-600" />
+              <span>Weekly Availability</span>
+            </h4>
+            <div className="bg-slate-50 rounded-lg p-4">
+              <p className="text-slate-800">{formatAvailability()}</p>
+              
+              {availability && Object.keys(availability).some(day => availability[day]?.length > 0) && (
+                <div className="mt-3 space-y-2">
+                  {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map(day => {
+                    if (availability[day]?.length > 0) {
+                      return (
+                        <div key={day} className="flex items-start space-x-2 text-sm">
+                          <span className="font-semibold text-slate-700 w-24 capitalize">{day}:</span>
+                          <span className="text-slate-600">{formatStudyTimes(availability[day])}</span>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Additional Study Preferences */}
+          {(studyPreferences.focusAreas || studyPreferences.goals || studyPreferences.preferredLocations) && (
             <div>
-              <h4 className="text-lg font-semibold text-slate-800 mb-3">Common Modules</h4>
-              <div className="flex flex-wrap gap-2">
-                {partner.commonModules.map((module, index) => (
-                  <span
-                    key={index}
-                    className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded border border-green-200"
-                  >
-                    {module}
-                  </span>
-                ))}
+              <h4 className="text-lg font-bold text-slate-800 mb-3">Additional Information</h4>
+              <div className="space-y-3">
+                {studyPreferences.focusAreas && (
+                  <div className="bg-slate-50 rounded-lg p-4">
+                    <p className="text-sm font-semibold text-slate-600 mb-2">Focus Areas</p>
+                    <div className="flex flex-wrap gap-2">
+                      {studyPreferences.focusAreas.map((area, index) => (
+                        <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {studyPreferences.goals && (
+                  <div className="bg-slate-50 rounded-lg p-4">
+                    <p className="text-sm font-semibold text-slate-600 mb-1">Study Goals</p>
+                    <p className="text-slate-800 text-sm">{studyPreferences.goals}</p>
+                  </div>
+                )}
+
+                {studyPreferences.preferredLocations && studyPreferences.preferredLocations.length > 0 && (
+                  <div className="bg-slate-50 rounded-lg p-4">
+                    <p className="text-sm font-semibold text-slate-600 mb-2 flex items-center space-x-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>Preferred Study Locations</span>
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {studyPreferences.preferredLocations.map((location, index) => (
+                        <span key={index} className="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded">
+                          {location}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Similarity Score */}
-          {partner.similarityScore && (
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-sm font-medium text-slate-600">
-                Compatibility: <span className="text-blue-600 font-semibold">{partner.similarityScore}%</span>
+          {/* Friend Since */}
+          {partner.friendsSince && (
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <p className="text-sm text-slate-600">
+                <span className="font-semibold">Study Partners Since:</span>{' '}
+                {new Date(partner.friendsSince).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
               </p>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="space-y-3 pt-4">
+          <div className="space-y-3 pt-4 border-t">
             <button 
               onClick={() => onStartChat(partner.uid)}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 shadow-md"
             >
-              <MessageCircle className="w-4 h-4" />
-              <span>Start Chat</span>
+              <MessageCircle className="w-5 h-5" />
+              <span>Start Conversation</span>
             </button>
-            <button className="w-full bg-gray-100 text-slate-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
-              View Full Profile
+            <button 
+              onClick={onClose}
+              className="w-full bg-slate-100 text-slate-700 py-3 rounded-lg font-semibold hover:bg-slate-200 transition-colors"
+            >
+              Close
             </button>
           </div>
         </div>
@@ -168,6 +386,8 @@ function PartnerModal({ partner, isOpen, onClose, onStartChat }) {
     </div>
   );
 }
+
+
 
 export default function Partners() {
   const navigate = useNavigate();

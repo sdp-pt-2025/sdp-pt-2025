@@ -115,18 +115,26 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
     if (!group?.id) return;
     
     try {
+      console.log('Fetching messages for group:', group.id, 'user:', currentUser.uid);
+      
       const response = await fetch(
         `${baseUrl}/api/study-groups/${group.id}/messages?userId=${currentUser.uid}`
       );
+      
+      console.log('Response status:', response.status);
+      
       const result = await response.json();
-
+      console.log('Messages result:', result);
+  
       if (result.success) {
         setMessages(result.data);
       } else {
         console.error("Failed to fetch messages:", result.error);
+        toast.error(result.error || "Failed to load messages");
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
+      toast.error("Failed to load messages: " + error.message);
     } finally {
       setLoading(false);
     }
