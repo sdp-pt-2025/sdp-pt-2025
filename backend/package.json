@@ -23,7 +23,8 @@
         "seed:test": "NODE_ENV=test node src/scripts/seed-database.js",
         "health:check": "curl -f http://localhost:8080/health || exit 1",
         "docs:generate": "swagger-jsdoc -d swaggerDef.js src/routes/*.js -o swagger.json",
-        "docs:serve": "swagger-ui-serve swagger.json"
+        "docs:serve": "swagger-ui-serve swagger.json",
+        "vercel-build": "prisma generate && prisma migrate deploy"
     },
     "dependencies": {
         "axios": "^1.7.9",
