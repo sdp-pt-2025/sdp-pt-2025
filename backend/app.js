@@ -53,7 +53,7 @@ app.use("/api/profile", profileRouter);
 app.use("/api/find-friends", FriendsRouter);
 
 //file uploads
-// app.use("/api/upload", uploadRouter);
+app.use("/api", uploadRouter);
 
 app.get("/", (req, res) => {
     res.json({ 
