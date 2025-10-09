@@ -147,7 +147,7 @@ router.get("/", async (req, res) => {
                         modules: true,
                         email: true,
                         studyPreferences:true,
-                        preferredStudyTimes: true,
+                        // preferredStudyTimes: true,
                         studentId: true
                     }
                 },
