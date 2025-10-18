@@ -3,6 +3,9 @@ import { Clock, CheckCircle, Users, Calendar, BookOpen, Target, TrendingUp, Star
 import { auth } from '../../firebase/init';
 import Sidebar from '../../components/Sidebar/sidebar';
 import { useUserData } from '../../hooks/useUserData';
+import WeatherCard from '../../components/WeatherCard/WeatherCard';
+import WeatherMap from '../../components/WeatherMap/WeatherMap';
+import useWeather from '../../hooks/useWeather';
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -12,6 +15,7 @@ const Dashboard = () => {
 
 
   const { userData } = useUserData();
+  const { weatherData } = useWeather();
   
   // console.log(userData, "-------------------------")
   const BASE_URL = import.meta.env.VITE_PUBLIC_URL;
@@ -227,6 +231,12 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Weather Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <WeatherCard />
+            <WeatherMap weatherData={weatherData} />
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

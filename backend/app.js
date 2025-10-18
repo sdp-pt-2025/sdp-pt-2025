@@ -8,6 +8,7 @@ import dashboardRouter from "./routes/dashboard.js";
 import profileRouter from "./routes/profile.js";
 import FriendsRouter from "./routes/find-friends.js";
 import uploadRouter from "./routes/uploads.js";
+import weatherRouter from "./src/routes/weather.js";
 
 const app = express();
 
@@ -36,7 +37,8 @@ app.get("/", (req, res) => {
             "/api/chats",
             "/api/dashboard",
             "/api/profile",
-            "/api/find-friends"
+            "/api/find-friends",
+            "/api/weather"
         ]
     });
 });
@@ -49,6 +51,7 @@ app.use("/api/chats", chatRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/find-friends", FriendsRouter);
+app.use("/api/weather", weatherRouter);
 app.use("/api", uploadRouter);
 
 // 404 handler - must be last
@@ -63,7 +66,8 @@ app.use((req, res) => {
             "/api/chats",
             "/api/dashboard",
             "/api/profile",
-            "/api/find-friends"
+            "/api/find-friends",
+            "/api/weather"
         ]
     });
 });
