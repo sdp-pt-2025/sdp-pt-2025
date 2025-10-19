@@ -1,5 +1,3 @@
-
-
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 const router = express.Router();
@@ -22,8 +20,6 @@ router.post("/", async (req, res) => {
             location,
             schedule,
             email,
-         
-            
         } = req.body;
 
         // Validation
@@ -41,9 +37,6 @@ router.post("/", async (req, res) => {
         });
 
         if (!userExists) {
-
-            //all this data will be dynamic.
-            
             try {
                 const newUser = await prisma.user.create({
                     data: {
@@ -57,7 +50,6 @@ router.post("/", async (req, res) => {
                         modules: [module]
                     }
                 });
-                // console.log("Created temporary user:", newUser);
             } catch (userCreationError) {
                 if (userCreationError.code !== "P2002") { 
                     return res.status(400).json({
@@ -69,12 +61,10 @@ router.post("/", async (req, res) => {
             }
         }
 
-        
         const finalCreatedByName = createdByName || userExists?.displayName || "Unknown User";
 
         // Create study group
         const studyGroup = await prisma.$transaction(async (tx) => {
-            
             const newGroup = await tx.studyGroup.create({
                 data: {
                     name: name.trim(),
@@ -89,11 +79,9 @@ router.post("/", async (req, res) => {
                     location: location || null,
                     schedule: schedule || null,
                     status: "active",
-                    // uid
                 }
             });
 
-            //this is the first memeber by default.. more features to come
             await tx.groupMember.create({
                 data: {
                     userId: createdBy,
@@ -113,7 +101,6 @@ router.post("/", async (req, res) => {
     } catch (error) {
         console.error("Error creating study group:", error);
         
-        // Handle specific Prisma errors
         if (error.code === "P2003") {
             return res.status(400).json({
                 success: false,
@@ -232,24 +219,20 @@ router.get("/", async (req, res) => {
             skip: parseInt(offset)
         });
 
-        
         const transformedGroups = studyGroups.map(group => {
-            let userStatus = "not_member"; // Default status
+            let userStatus = "not_member";
             let hasPendingRequest = false;
 
             if (userId) {
-                
                 const isMember = group.members.some(member => member.user.uid === userId);
                 if (isMember) {
                     userStatus = "member";
                 }
 
-                // Check if user is the creator
                 if (group.createdBy === userId) {
                     userStatus = "creator";
                 }
 
-                
                 hasPendingRequest = group.joinRequests.some(request => request.user.uid === userId);
                 if (hasPendingRequest && userStatus === "not_member") {
                     userStatus = "pending";
@@ -326,7 +309,6 @@ router.post("/:id/request-join", async (req, res) => {
             });
         }
 
-        // Check if study group exists and is active
         const studyGroup = await prisma.studyGroup.findUnique({
             where: { id },
             include: {
@@ -354,7 +336,6 @@ router.post("/:id/request-join", async (req, res) => {
             });
         }
 
-        // Check if group is full
         if (studyGroup.members.length >= studyGroup.maxMembers) {
             return res.status(400).json({
                 success: false,
@@ -362,7 +343,6 @@ router.post("/:id/request-join", async (req, res) => {
             });
         }
 
-        // Check if user is already a member
         const existingMember = await prisma.groupMember.findUnique({
             where: {
                 userId_groupId: {
@@ -379,7 +359,6 @@ router.post("/:id/request-join", async (req, res) => {
             });
         }
 
-        // Check if user has pending request
         if (studyGroup.joinRequests.length > 0) {
             return res.status(400).json({
                 success: false,
@@ -387,7 +366,6 @@ router.post("/:id/request-join", async (req, res) => {
             });
         }
 
-        // Create join request
         await prisma.groupJoinRequest.create({
             data: {
                 userId,
@@ -396,7 +374,6 @@ router.post("/:id/request-join", async (req, res) => {
             }
         });
 
-        // Create notification for group creator
         const userInfo = await prisma.user.findUnique({
             where: { uid: userId },
             select: { displayName: true }
@@ -437,7 +414,7 @@ router.post("/:id/request-join", async (req, res) => {
 router.post("/:id/respond-request", async (req, res) => {
     try {
         const { id } = req.params;
-        const { requestId, action, adminId } = req.body; // action: 'approve' or 'reject'
+        const { requestId, action, adminId } = req.body;
 
         if (!requestId || !action || !adminId) {
             return res.status(400).json({
@@ -446,7 +423,6 @@ router.post("/:id/respond-request", async (req, res) => {
             });
         }
 
-        // Verify admin is group creator
         const studyGroup = await prisma.studyGroup.findUnique({
             where: { id }
         });
@@ -458,7 +434,6 @@ router.post("/:id/respond-request", async (req, res) => {
             });
         }
 
-        // Get the join request
         const joinRequest = await prisma.groupJoinRequest.findUnique({
             where: { id: requestId },
             include: {
@@ -476,9 +451,7 @@ router.post("/:id/respond-request", async (req, res) => {
         }
 
         if (action === 'approve') {
-            // Add user to group and update request
             await prisma.$transaction(async (tx) => {
-                // Create group membership
                 await tx.groupMember.create({
                     data: {
                         userId: joinRequest.userId,
@@ -486,7 +459,6 @@ router.post("/:id/respond-request", async (req, res) => {
                     }
                 });
 
-                // Update join request
                 await tx.groupJoinRequest.update({
                     where: { id: requestId },
                     data: {
@@ -496,7 +468,6 @@ router.post("/:id/respond-request", async (req, res) => {
                     }
                 });
 
-                // Update group activity
                 await tx.studyGroup.update({
                     where: { id },
                     data: {
@@ -505,7 +476,6 @@ router.post("/:id/respond-request", async (req, res) => {
                 });
             });
 
-            // Notify the user
             await prisma.notification.create({
                 data: {
                     userId: joinRequest.userId,
@@ -522,7 +492,6 @@ router.post("/:id/respond-request", async (req, res) => {
             });
 
         } else if (action === 'reject') {
-            // Update request status
             await prisma.groupJoinRequest.update({
                 where: { id: requestId },
                 data: {
@@ -532,7 +501,6 @@ router.post("/:id/respond-request", async (req, res) => {
                 }
             });
 
-            // Notify the user
             await prisma.notification.create({
                 data: {
                     userId: joinRequest.userId,
@@ -570,7 +538,6 @@ router.get("/:id/join-requests", async (req, res) => {
         const { id } = req.params;
         const { adminId } = req.query;
 
-        // Verify admin
         const studyGroup = await prisma.studyGroup.findUnique({
             where: { id }
         });
@@ -625,7 +592,6 @@ router.get("/:id/messages", async (req, res) => {
         const { id } = req.params;
         const { userId, limit = 50, offset = 0 } = req.query;
 
-        // Verify user is member
         const isMember = await prisma.groupMember.findUnique({
             where: {
                 userId_groupId: {
@@ -660,9 +626,32 @@ router.get("/:id/messages", async (req, res) => {
             skip: parseInt(offset)
         });
 
+        const messagesWithParsedAttachments = messages.map(msg => {
+            let parsedAttachments = [];
+            
+            if (msg.attachments && Array.isArray(msg.attachments)) {
+                parsedAttachments = msg.attachments.map(att => {
+                    if (typeof att === 'string') {
+                        try {
+                            const parsed = JSON.parse(att);
+                            return parsed;
+                        } catch (e) {
+                            return { url: att, filename: 'Download' };
+                        }
+                    }
+                    return att;
+                });
+            }
+        
+            return {
+                ...msg,
+                attachments: parsedAttachments
+            };
+        });
+
         res.json({
             success: true,
-            data: messages.reverse()
+            data: messagesWithParsedAttachments.reverse()
         });
 
     } catch (error) {
@@ -676,87 +665,11 @@ router.get("/:id/messages", async (req, res) => {
 });
 
 
-
-
-// router.post("/:id/messages", async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const { userId, message, messageType = "text", attachments = [] } = req.body;
-
-//         // Verify user is member
-//         const member = await prisma.groupMember.findUnique({
-//             where: {
-//                 userId_groupId: {
-//                     userId: userId,
-//                     groupId: id
-//                 }
-//             },
-//             include: {
-//                 user: {
-//                     select: {
-//                         displayName: true
-//                     }
-//                 }
-//             }
-//         });
-
-//         if (!member) {
-//             return res.status(403).json({
-//                 success: false,
-//                 error: "You must be a member to send messages"
-//             });
-//         }
-
-//         const newMessage = await prisma.groupMessage.create({
-//             data: {
-//                 groupId: id,
-//                 senderId: userId,
-//                 senderName: member.user.displayName,
-//                 message: message,
-//                 messageType: messageType,
-//                 attachments: attachments
-//             },
-//             include: {
-//                 sender: {
-//                     select: {
-//                         uid: true,
-//                         displayName: true,
-//                         photoURL: true
-//                     }
-//                 }
-//             }
-//         });
-
-//         // Update group last activity
-//         await prisma.studyGroup.update({
-//             where: { id },
-//             data: {
-//                 lastActivityAt: new Date()
-//             }
-//         });
-
-//         res.json({
-//             success: true,
-//             data: newMessage
-//         });
-
-//     } catch (error) {
-//         console.error("Error sending message:", error);
-//         res.status(500).json({
-//             success: false,
-//             error: "Failed to send message",
-//             message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
-//         });
-//     }
-// });
-
-
 router.post("/:id/messages", async (req, res) => {
     try {
         const { id } = req.params;
         const { userId, message, messageType = "text", attachments = [] } = req.body;
 
-        // Verify user is member
         const member = await prisma.groupMember.findUnique({
             where: {
                 userId_groupId: {
@@ -780,22 +693,23 @@ router.post("/:id/messages", async (req, res) => {
             });
         }
 
-        // Process attachments to ensure they're in the correct format
-        const processedAttachments = attachments.map(attachment => {
-            if (typeof attachment === 'string') {
-                
-                return attachment;
-            } else {
-                // New format - object with url, filename, etc.
-                return {
-                    url: attachment.url,
-                    filename: attachment.filename,
-                    size: attachment.size,
-                    type: attachment.type,
-                    storagePath: attachment.storagePath
-                };
-            }
-        });
+        let attachmentsData = [];
+        
+        if (attachments && attachments.length > 0) {
+            attachmentsData = attachments.map(att => {
+                if (typeof att === 'string') {
+                    return att;
+                }
+                const jsonString = JSON.stringify({
+                    url: att.url,
+                    filename: att.filename || att.originalName,
+                    size: att.size,
+                    type: att.type,
+                    storagePath: att.storagePath
+                });
+                return jsonString;
+            });
+        }
 
         const newMessage = await prisma.groupMessage.create({
             data: {
@@ -804,7 +718,7 @@ router.post("/:id/messages", async (req, res) => {
                 senderName: member.user.displayName,
                 message: message || '',
                 messageType: messageType,
-                attachments: processedAttachments
+                attachments: attachmentsData
             },
             include: {
                 sender: {
@@ -817,7 +731,6 @@ router.post("/:id/messages", async (req, res) => {
             }
         });
 
-       
         await prisma.studyGroup.update({
             where: { id },
             data: {
@@ -825,9 +738,20 @@ router.post("/:id/messages", async (req, res) => {
             }
         });
 
+        const responseMessage = {
+            ...newMessage,
+            attachments: newMessage.attachments.map(att => {
+                try {
+                    return JSON.parse(att);
+                } catch {
+                    return { url: att, filename: 'Download' };
+                }
+            })
+        };
+
         res.json({
             success: true,
-            data: newMessage
+            data: responseMessage
         });
 
     } catch (error) {
@@ -846,7 +770,6 @@ router.delete("/:id/messages/:messageId/file", async (req, res) => {
         const { id, messageId } = req.params;
         const { userId, storagePath } = req.body;
 
-        
         const message = await prisma.groupMessage.findUnique({
             where: { id: messageId }
         });
@@ -858,7 +781,6 @@ router.delete("/:id/messages/:messageId/file", async (req, res) => {
             });
         }
 
-        // Check if user is the sender or group admin
         const studyGroup = await prisma.studyGroup.findUnique({
             where: { id }
         });
@@ -871,8 +793,6 @@ router.delete("/:id/messages/:messageId/file", async (req, res) => {
                 error: "You don't have permission to delete this file"
             });
         }
-
-        
 
         const updatedAttachments = message.attachments.filter(
             att => att.storagePath !== storagePath
@@ -901,11 +821,11 @@ router.delete("/:id/messages/:messageId/file", async (req, res) => {
     }
 });
 
+
 router.get("/:id/is-member", async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Check if study group exists
         const studyGroup = await prisma.studyGroup.findUnique({
             where: { id },
             include: {
@@ -955,7 +875,7 @@ router.get("/:id/is-member", async (req, res) => {
             message: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
         });
     }
-})
+});
 
 
 router.delete("/:id", async (req, res) => {
@@ -970,7 +890,6 @@ router.delete("/:id", async (req, res) => {
             });
         }
 
-        // Check if study group exists and user is the creator
         const studyGroup = await prisma.studyGroup.findUnique({
             where: { id }
         });
@@ -989,8 +908,7 @@ router.delete("/:id", async (req, res) => {
             });
         }
 
-        // Delete study group 
-        await prisma.StudyGroup.delete({
+        await prisma.studyGroup.delete({
             where: { id }
         });
 
@@ -1008,9 +926,6 @@ router.delete("/:id", async (req, res) => {
         });
     }
 });
-
-
-
 
 router.post("/:id/sessions", async (req, res) => {
     try {

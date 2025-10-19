@@ -1,9 +1,6 @@
 
 
-//......................................................................................
-
 import {
-  ChevronRight,
   Send,
   Paperclip,
   Users,
@@ -31,6 +28,8 @@ import uuid4 from "uuid4";
 
 import  {auth}  from "../../../firebase/init";
 
+
+
 const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -48,67 +47,6 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
 
   const user = auth.currentUser;
  
-  
-  // const uploadFileToFirebase = async (file) => {
-  //   if (!file) {
-  //     throw new Error('No file provided');
-  //   }
-
-  //   toast.loading('Uploading file...', { id: 'file-upload' });
-  //   setUploading(true);
-
-  //   try {
-  //     const timestamp = Date.now();
-      
-  //     const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  //     const fileName = `${timestamp}_${sanitizedFileName}`;
-  //     const storageRef = ref(storage, `Wireframe_To_Code/${fileName}`);
-
-  //     const metadata = {
-  //       contentType: file.type,
-  //       customMetadata: {
-  //         'uploadedBy': user?.email || 'unknown',
-  //         'originalName': file.name
-  //       }
-  //     };
-
-  //     console.log('Uploading to:', storageRef.fullPath);
-
-      
-  //     const snapshot = await uploadBytes(storageRef, file, metadata);
-  //     console.log('Upload successful:', snapshot);
-
-      
-  //     const downloadUrl = await getDownloadURL(storageRef);
-  //     console.log('Download URL:', downloadUrl);
-
-  //     setUploading(false);
-  //     toast.success('File uploaded successfully!', { id: 'file-upload' });
-
-  //     const uid = uuid4();
-
-
-
-  //     return {
-  //       uid: uid,
-  //       url: downloadUrl,
-  //       originalName: file.name,
-  //       filename: file.name,
-  //       fileName: fileName,
-  //       storagePath: `Wireframe_To_Code/${fileName}`,
-  //       size: file.size,
-  //       type: file.type,
-  //       description: "File from group chat",
-  //       imageUrl: downloadUrl,
-  //       email: user?.email,
-  //     };
-  //   } catch (error) {
-  //     console.error('Upload error:', error);
-  //     setUploading(false);
-  //     toast.error(error.message || 'Failed to upload file', { id: 'file-upload' });
-  //     throw error;
-  //   }
-  // };
   const uploadFileToFirebase = async (file) => {
     if (!file) {
       throw new Error('No file provided');
@@ -148,6 +86,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
       throw error;
     }
   };
+
   const isAdmin = group?.createdBy === currentUser?.uid;
 
   useEffect(() => {
@@ -166,7 +105,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -176,18 +115,26 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
     if (!group?.id) return;
     
     try {
+      console.log('Fetching messages for group:', group.id, 'user:', currentUser.uid);
+      
       const response = await fetch(
         `${baseUrl}/api/study-groups/${group.id}/messages?userId=${currentUser.uid}`
       );
+      
+      console.log('Response status:', response.status);
+      
       const result = await response.json();
-
+      console.log('Messages result:', result);
+  
       if (result.success) {
         setMessages(result.data);
       } else {
         console.error("Failed to fetch messages:", result.error);
+        toast.error(result.error || "Failed to load messages");
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
+      toast.error("Failed to load messages: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -249,20 +196,17 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
       
       let fileData = null;
       
-      
       if (selectedFile) {
         try {
           fileData = await uploadFileToFirebase(selectedFile);
-          toast.success('File uploaded successfully!', { id: 'file-upload' });
         } catch (error) {
           console.error('File upload error:', error);
-          toast.error(error.message || 'Failed to upload file', { id: 'file-upload' });
+          toast.error(error.message || 'Failed to upload file');
           setSending(false);
           return;
         }
       }
 
-      // Send message with file data if available
       const response = await fetch(
         `${baseUrl}/api/study-groups/${group.id}/messages`,
         {
@@ -316,7 +260,6 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // (10MB)
       const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
         toast.error('File size must be less than 10MB');
@@ -367,6 +310,66 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
     return grouped;
   };
 
+  const handleFileDownload = async (fileUrl, fileName) => {
+    try {
+      toast.loading('Downloading...', { id: 'download' });
+      
+     
+      if (!fileUrl || (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://'))) {
+        console.error('Invalid file URL:', fileUrl);
+        toast.error('Invalid file URL', { id: 'download' });
+        return;
+      }
+
+     
+      if (fileUrl.includes('storage.googleapis.com') || fileUrl.includes('firebasestorage.app')) {
+       
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = fileUrl;
+        a.download = fileName;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        setTimeout(() => {
+          document.body.removeChild(a);
+        }, 100);
+        
+        toast.success('Download started!', { id: 'download' });
+        return;
+      }
+
+      
+      const response = await fetch(fileUrl);
+      
+      if (!response.ok) {
+        throw new Error('Download failed');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = fileName;
+      
+      document.body.appendChild(a);
+      a.click();
+      
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success('Downloaded successfully!', { id: 'download' });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Failed to download file. Click the file to open in a new tab.', { id: 'download' });
+    }
+  };
+
   const renderMessage = (message) => {
     const isOwn = message.senderId === currentUser.uid;
     
@@ -410,30 +413,84 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
             {message.messageType === 'file' && message.attachments?.length > 0 && (
               <div className="mb-3">
                 {message.attachments.map((attachment, index) => {
-                  const isObject = typeof attachment === 'object';
-                  const fileUrl = isObject ? attachment.url : attachment;
-                  const fileName = isObject ? attachment.filename : attachment;
-                  const fileSize = isObject ? attachment.size : null;
+                  let attachmentData;
+                  
+                  if (typeof attachment === 'string') {
+                    try {
+                      attachmentData = JSON.parse(attachment);
+                    } catch (e) {
+                     
+                      if (attachment.startsWith('http://') || attachment.startsWith('https://')) {
+                        attachmentData = { 
+                          url: attachment, 
+                          filename: attachment.split('/').pop().split('?')[0] || 'Download',
+                          size: null
+                        };
+                      } else {
+                      
+                        console.error('Attachment is just a filename, no URL:', attachment);
+                        return (
+                          <div
+                            key={index}
+                            className={`w-full flex items-center gap-3 p-3 rounded-2xl opacity-50 ${
+                              isOwn ? 'bg-blue-700/50' : 'bg-gray-100'
+                            }`}
+                          >
+                            <File className="w-5 h-5 flex-shrink-0" />
+                            <div className="flex-1 min-w-0 text-left">
+                              <span className="text-sm truncate block">{attachment}</span>
+                              <span className="text-xs opacity-75">File unavailable</span>
+                            </div>
+                          </div>
+                        );
+                      }
+                    }
+                  } else if (typeof attachment === 'object') {
+                    attachmentData = attachment;
+                  } else {
+                    console.error('Unknown attachment format:', attachment);
+                    return null;
+                  }
+
+                  const fileUrl = attachmentData.url;
+                  const fileName = attachmentData.filename || attachmentData.originalName || 'Download';
+                  const fileSize = attachmentData.size;
+                  
+                  if (!fileUrl || (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://'))) {
+                    console.error('Invalid or missing URL for attachment:', attachmentData);
+                    return (
+                      <div
+                        key={index}
+                        className={`w-full flex items-center gap-3 p-3 rounded-2xl opacity-50 ${
+                          isOwn ? 'bg-blue-700/50' : 'bg-gray-100'
+                        }`}
+                      >
+                        <File className="w-5 h-5 flex-shrink-0" />
+                        <div className="flex-1 min-w-0 text-left">
+                          <span className="text-sm truncate block">{fileName}</span>
+                          <span className="text-xs opacity-75">File unavailable</span>
+                        </div>
+                      </div>
+                    );
+                  }
                   
                   return (
-                    <a
+                    <button
                       key={index}
-                      href={fileUrl || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 hover:scale-[1.02] ${
-                        isOwn ? 'bg-blue-700/50' : 'bg-gray-100'
+                      onClick={() => handleFileDownload(fileUrl, fileName)}
+                      className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 hover:scale-[1.02] cursor-pointer ${
+                        isOwn ? 'bg-blue-700/50 hover:bg-blue-700/70' : 'bg-gray-100 hover:bg-gray-200'
                       }`}
                     >
                       <File className="w-5 h-5 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 text-left">
                         <span className="text-sm truncate block">{fileName}</span>
                         {fileSize && (
                           <span className="text-xs opacity-75">{formatFileSize(fileSize)}</span>
                         )}
                       </div>
                       <Download className="w-5 h-5 cursor-pointer hover:scale-110 transition-transform flex-shrink-0" />
-                    </a>
+                    </button>
                   );
                 })}
               </div>
@@ -470,27 +527,21 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-violet-50/30 via-purple-50/30 to-fuchsia-50/30">
-      {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
-       
         <div className="overflow-hidden rounded-3xl mt-2 mb-1 fixed top-0 right-2 max-w-4xl left-2 md:left-60 z-10 mx-auto">
-         
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-blue-900 to-blue-800 opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-blue-800 opacity-90"></div>
           
-         
           <div className="absolute inset-0 opacity-30">
-            <div className="absolute top-0 left-0 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-            <div className="absolute top-0 right-0 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+            <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+            <div className="absolute top-0 right-0 w-72 h-72 bg-blue-800 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
           </div>
 
-         
           <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl">
             <div className="px-5 py-3.5 flex items-center justify-between">
-              {/* Left Section */}
               <div className="flex items-center gap-4">
                 <button
                   onClick={onBack}
-                  className="p-2.5 hover:bg-white/20 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-110"
+                  className="p-2.5 hover:bg-white/20 rounded-xl transition-all z-15 duration-300 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:scale-110"
                 >
                   <ChevronLeft className="w-5 h-5 text-white" />
                 </button>
@@ -498,11 +549,11 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
-                      <span className="text-lg font-bold text-white">
+                      <span className="text-lg font-bold text-white z-20">
                         {group?.name?.charAt(0) || 'G'}
                       </span>
                     </div>
-                    <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-2xl blur-md opacity-50"></div>
+                    {/* <div className="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-2xl blur-md opacity-50"></div> */}
                   </div>
                   
                   <div>
@@ -512,7 +563,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
                     <div className="flex items-center gap-2 mt-0.5">
                       <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full border border-white/30">
                         <Users className="w-3 h-3 text-white/90" />
-                        <span className="text-xs font-medium text-white/90">
+                        <span className="text-xs font-medium text-white/90 z-20">
                           {group?.memberCount || 0}
                         </span>
                       </div>
@@ -525,7 +576,6 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
                 </div>
               </div>
               
-              {/* Right Section */}
               <div className="flex items-center gap-2">
                 {isAdmin && joinRequests.length > 0 && (
                   <button
@@ -555,7 +605,6 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-4 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 blur-2xl opacity-50"></div>
         </div>
 
-        {/* Messages Area */}
         <div className="flex-1 overflow-y-auto px-4 pt-20 pb-32 bg-gradient-to-b from-transparent to-white/30">
           {Object.entries(groupedMessages).length === 0 ? (
             <div className="flex items-center justify-center h-full">
@@ -585,8 +634,7 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Premium Message Input */}
-        <div className="fixed bottom-2 right-2 max-w-4xl mx-auto left-2 md:left-60 z-40">
+        <div className="fixed bottom-2 right-2 max-w-4xl mx-auto left-2 md:left-60 z-20">
           <div className="relative overflow-hidden rounded-3xl">
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600/90 via-purple-600/90 to-fuchsia-600/90"></div>
             <div className="relative backdrop-blur-xl bg-white/95 border border-white/20 shadow-2xl p-4">
@@ -668,7 +716,6 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
         </div>
       </div>
 
-      {/* Members Sidebar */}
       {showMembers && (
         <div className="w-80 relative overflow-hidden z-30 rounded-3xl ml-2 my-2 mr-2">
           <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600"></div>
@@ -725,7 +772,6 @@ const GroupChatView = ({ group, onBack, currentUser, baseUrl }) => {
         </div>
       )}
 
-      
       {showJoinRequests && isAdmin && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="relative w-full max-w-lg">

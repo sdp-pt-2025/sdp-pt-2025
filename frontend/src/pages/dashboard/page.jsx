@@ -3,6 +3,9 @@ import { Clock, CheckCircle, Users, Calendar, BookOpen, Target, TrendingUp, Star
 import { auth } from '../../firebase/init';
 import Sidebar from '../../components/Sidebar/sidebar';
 import { useUserData } from '../../hooks/useUserData';
+import WeatherCard from '../../components/WeatherCard/WeatherCard';
+import WeatherMap from '../../components/WeatherMap/WeatherMap';
+import useWeather from '../../hooks/useWeather';
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -12,6 +15,7 @@ const Dashboard = () => {
 
 
   const { userData } = useUserData();
+  const { weatherData } = useWeather();
   
   // console.log(userData, "-------------------------")
   const BASE_URL = import.meta.env.VITE_PUBLIC_URL;
@@ -229,6 +233,12 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Weather Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <WeatherCard />
+            <WeatherMap weatherData={weatherData} />
+          </div>
+
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Recent Activity Card */}
             <div className="xl:col-span-2 bg-white rounded-lg shadow-sm p-4 sm:p-6">
@@ -369,7 +379,7 @@ const Dashboard = () => {
           </div>
 
           {/* Quick Actions Section */}
-          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+          {/* <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
             <h3 className="text-lg font-semibold text-slate-800 mb-4">Quick Actions</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <button className="p-4 flex flex-col justify-center items-center bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors">
@@ -389,7 +399,7 @@ const Dashboard = () => {
                 <div className="font-medium text-slate-800">View Analytics</div>
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>

@@ -26,10 +26,10 @@ function App() {
                     <Route path="/study-groups" element={<CreateStudyGroup />} />
                     <Route path="/progress-tracker" element={<Progress />} />
                     <Route path="/profile" element={<Profile />} />
-                    
-                   
                     <Route path="/chats" element={<ChatPage />} />
                     <Route path="/chats/:chatId" element={<ChatPage />} />
+                    {/* Catch-all route must be last */}
+                    <Route path="*" element={<NoPage />} />
                 </Routes>
                 <Toaster/>
             </Provider>

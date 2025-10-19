@@ -47,7 +47,7 @@ export default function Sidebar() {
           e.stopPropagation();
           setIsMobileOpen(!isMobileOpen);
         }}
-        className="md:hidden fixed top-4 right-4 z-50 !bg-white flex flex-col justify-center items-center space-y-1.5 w-10 h-10 rounded-lg  transition-colors"
+        className="md:hidden fixed top-4 right-4 z-9000 !bg-white flex flex-col justify-center items-center space-y-1.5 w-10 h-10 rounded-lg  transition-colors"
         aria-label="Toggle menu"
       >
         <div
