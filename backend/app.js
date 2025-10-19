@@ -8,7 +8,7 @@ import dashboardRouter from "./routes/dashboard.js";
 import profileRouter from "./routes/profile.js";
 import FriendsRouter from "./routes/find-friends.js";
 import uploadRouter from "./routes/uploads.js";
-import weatherRouter from "./src/routes/weather.js";
+import weatherRouter from "./routes/weather.js";
 
 const app = express();
 

@@ -28,13 +28,16 @@ const WeatherCard = ({ className = "" }) => {
     formatLastUpdated
   } = useWeather();
 
-  const getWeatherIconComponent = (icon) => {
-    if (icon.includes('01')) return <Sun className="w-8 h-8 text-yellow-500" />;
-    if (icon.includes('02') || icon.includes('03') || icon.includes('04')) return <Cloud className="w-8 h-8 text-gray-500" />;
-    if (icon.includes('09') || icon.includes('10')) return <CloudRain className="w-8 h-8 text-blue-500" />;
-    if (icon.includes('11')) return <Zap className="w-8 h-8 text-purple-500" />;
-    if (icon.includes('13')) return <CloudSnow className="w-8 h-8 text-blue-200" />;
-    if (icon.includes('50')) return <Cloud className="w-8 h-8 text-gray-400" />;
+  const getWeatherIconComponent = (description) => {
+    if (!description) return <Sun className="w-8 h-8 text-yellow-500" />;
+    
+    const desc = description.toLowerCase();
+    if (desc.includes('sunny') || desc.includes('clear')) return <Sun className="w-8 h-8 text-yellow-500" />;
+    if (desc.includes('cloud')) return <Cloud className="w-8 h-8 text-gray-500" />;
+    if (desc.includes('rain') || desc.includes('drizzle')) return <CloudRain className="w-8 h-8 text-blue-500" />;
+    if (desc.includes('thunder') || desc.includes('storm')) return <Zap className="w-8 h-8 text-purple-500" />;
+    if (desc.includes('snow') || desc.includes('sleet')) return <CloudSnow className="w-8 h-8 text-blue-200" />;
+    if (desc.includes('fog') || desc.includes('mist')) return <Cloud className="w-8 h-8 text-gray-400" />;
     return <Sun className="w-8 h-8 text-yellow-500" />;
   };
 
@@ -90,6 +93,10 @@ const WeatherCard = ({ className = "" }) => {
 
   const { current, location, studyRecommendation } = weatherData;
 
+  // Handle both Google API format (latitude/longitude) and legacy format (lat/lon)
+  const lat = location.coordinates.latitude || location.coordinates.lat;
+  const lon = location.coordinates.longitude || location.coordinates.lon;
+
   return (
     <div className={`bg-white rounded-lg shadow-sm p-6 ${className}`}>
       {/* Header */}
@@ -120,7 +127,7 @@ const WeatherCard = ({ className = "" }) => {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
           <div className="text-4xl">
-            {getWeatherIcon(current.icon)}
+            {getWeatherIcon(current.description)}
           </div>
           <div>
             <div className={`text-3xl font-bold ${getTemperatureColor(current.temperature)}`}>
@@ -138,7 +145,7 @@ const WeatherCard = ({ className = "" }) => {
         <div className="text-right">
           <div className="text-sm text-gray-600">{location.name}</div>
           <div className="text-xs text-gray-500">
-            {location.coordinates.lat.toFixed(4)}, {location.coordinates.lon.toFixed(4)}
+            {lat.toFixed(4)}, {lon.toFixed(4)}
           </div>
         </div>
       </div>
@@ -157,7 +164,7 @@ const WeatherCard = ({ className = "" }) => {
           <Wind className="w-4 h-4 text-green-600" />
           <div>
             <div className="text-xs text-gray-500">Wind</div>
-            <div className="text-sm font-semibold text-green-800">{current.wind.speed} m/s</div>
+            <div className="text-sm font-semibold text-green-800">{current.wind.speed} km/h</div>
           </div>
         </div>
         
