@@ -28,6 +28,8 @@ const WeatherCard = ({ className = "" }) => {
     formatLastUpdated
   } = useWeather();
 
+  //api issues
+
   const getWeatherIconComponent = (description) => {
     if (!description) return <Sun className="w-8 h-8 text-yellow-500" />;
     
